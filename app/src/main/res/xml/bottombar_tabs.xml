@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        id="@+id/tab_videos"
+        title="@string/bottombar_videos"
+        icon="@drawable/ic_local_movies_black_24dp"
+        barColorWhenSelected="@color/tab1_primary"/>
+    <tab
+        id="@+id/tab_settings"
+        title="@string/bottombar_settings"
+        icon="@drawable/ic_settings_black_24dp"
+        barColorWhenSelected="@color/tab2_primary"/>
+    <tab
+        id="@+id/tab_info"
+        title="@string/bottombar_about"
+        icon="@drawable/ic_info_outline_black_24dp"
+        barColorWhenSelected="@color/tab3_primary"/>
+</tabs>

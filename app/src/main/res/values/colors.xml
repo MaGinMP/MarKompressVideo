@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+    <color name="tab1_primary">#FF5722</color>
+    <color name="tab1_primary_dark">#E64A19</color>
+    <color name="tab1_primary_light">#FFCCBC</color>
+    <color name="tab1_accent">#8BC34A</color>
+    -->
+
+    <color name="tab1_primary">#3F51B5</color>
+    <color name="tab1_primary_dark">#303F9F</color>
+    <color name="tab1_primary_light">#C5CAE9</color>
+    <color name="tab1_accent">#FF4081</color>
+
+    <color name="tab2_primary">#3F51B5</color>
+    <color name="tab2_primary_dark">#303F9F</color>
+    <color name="tab2_primary_light">#C5CAE9</color>
+    <color name="tab2_accent">#FF4081</color>
+
+    <color name="tab3_primary">#3F51B5</color>
+    <color name="tab3_primary_dark">#303F9F</color>
+    <color name="tab3_primary_light">#C5CAE9</color>
+    <color name="tab3_accent">#FF4081</color>
+
+    <!--
+    <color name="tab3_primary">#FFC107</color>
+    <color name="tab3_primary_dark">#FFA000</color>
+    <color name="tab3_primary_light">#FFECB3</color>
+    <color name="tab3_accent">#7C4DFF</color>
+    -->
+
+
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="grey300">#E0E0E0</color>
+
+    <color name="background">#FAFAFA</color>
+    <color name="background_ab">#F5F5F5</color>
+
+
+
+    <color name="colorBg2nd">#DFEEFF</color>
+    <color name="colorFg">#6F777F</color>
+    <color name="white">#FFFFFF</color>
+    <color name="VeryNearWhite">#F0F0FF</color>
+    <color name="nearWhite">#E6E6F5</color>
+    <color name="video_card_text_color">#E6E6F5</color>
+
+    <color name="welcome_screen_1">#3F51B5</color>
+    <color name="welcome_screen_2">#1976D2</color>
+    <color name="welcome_screen_3">#512DA8</color>
+    <color name="welcome_screen_4">#00796B</color>
+    <color name="welcome_screen_5">#795548</color>
+    <color name="welcome_screen_6">#6A1B9A</color>
+
+</resources>

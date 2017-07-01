@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@style/Tab2Theme">
+
+    <SwitchPreference
+        android:key="@string/keysetting_enable_service"
+        android:title="@string/settings_enable_service"
+        android:summaryOn="@string/settings_enable_service_summary_on"
+        android:summaryOff="@string/settings_enable_service_summary_off"
+        android:defaultValue="true"/>
+    <PreferenceCategory android:title="@string/settingcat_videos">
+        <ListPreference
+            android:key="@string/keysetting_video_dimen_limit"
+            android:title="@string/settings_video_dimen_limit"
+            android:summary="@string/settings_video_dimen_limit_summary"
+            android:entries="@array/settings_entries_video_dimen_limit"
+            android:entryValues="@array/settings_entrievals_video_dimen_limit"
+            android:defaultValue="@string/settings_video_dimen_def"
+            />
+        <ListPreference
+            android:key="@string/keysetting_video_q"
+            android:title="@string/settings_video_q"
+            android:summary="@string/settings_video_q_summary"
+            android:entries="@array/settings_entries_video_q"
+            android:entryValues="@array/settings_entrievals_video_q"
+            android:defaultValue="@string/settings_video_q_def" />
+        <ListPreference
+            android:key="@string/keysettings_audio_q"
+            android:title="@string/settings_audio_q"
+            android:summary="@string/settings_audio_q_summary"
+            android:entries="@array/settings_entries_audio_q"
+            android:entryValues="@array/settings_entrievals_audio_q"
+            android:defaultValue="@string/settings_audio_q_def" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settingcat_file">
+        <ListPreference
+            android:key="@string/keysetting_file_keep_time"
+            android:title="@string/settings_file_keep_time"
+            android:summary="@string/settings_file_keep_time_summary"
+            android:entries="@array/settings_entries_file_keep_time"
+            android:entryValues="@array/settings_entrievals_file_keep_time"
+            android:defaultValue="@string/settings_file_keep_time_def"
+            />
+        <MultiSelectListPreference
+            android:key="@string/keysetting_file_directories"
+            android:dialogTitle="@string/settings_file_directories_dial_title"
+            android:title="@string/settings_file_trasnscodefrom"
+            android:summary="@string/settings_file_directories_summary"
+            android:defaultValue="@array/settings_file_directories_def_val"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

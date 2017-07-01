@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="settings_entries_video_dimen_limit">
+        <item>480p\t\t\t(SD)</item>
+        <item>720p\t\t\t(HD)</item>
+        <item>1080p\t\t(FHD)</item>
+        <item>1440p\t\t(QHD)</item>
+        <item>2160p\t\t(4K)</item>
+        <item>4320p\t\t(8K)</item>
+    </string-array>
+    <string-array name="settings_entrievals_video_dimen_limit">
+        <item>480</item>
+        <item>720</item>
+        <item>1080</item>
+        <item>1440</item>
+        <item>2160</item>
+        <item>4320</item>
+    </string-array>
+    <string-array name="settings_entries_video_q">
+        <item>Decent\n<small>(good for archives)</small></item>
+        <item>High\n<small>(<b>recommended</b>)</small></item>
+        <item>Very high\n<small>(nearly visually lossless)</small></item>
+    </string-array>
+    <string-array name="settings_entrievals_video_q">
+        <item>10</item>
+        <item>100</item>
+        <item>1000</item>
+    </string-array>
+    <string-array name="settings_entries_audio_q">
+        <item>Don\'t touch</item>
+        <item>Decent</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="settings_entrievals_audio_q">
+        <item>-1</item>
+        <item>10</item>
+        <item>100</item>
+    </string-array>
+    <string-array name="settings_entries_file_keep_time">
+        <item>Don\'t keep</item>
+        <item>1 hour</item>
+        <item>1 day</item>
+        <item>1 week</item>
+        <item>1 month</item>
+        <item>Forever</item>
+    </string-array>
+    <string-array name="settings_entrievals_file_keep_time">
+        <item>0</item>
+        <item>1</item>
+        <item>24</item>
+        <item>168</item>
+        <item>744</item>
+        <item>-1</item>
+    </string-array>
+    <string-array name="settings_file_directories_def_val">
+        <item>Camera</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,31 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="titleBarElevation">4dp</dimen>
+    <dimen name="titleBarPadding">4dp</dimen>
+    <dimen name="titleBarTextSize">12sp</dimen>
+    <dimen name="actionBarElevation">4dp</dimen>
+    <dimen name="actionBarPadding">16dp</dimen>
+    <dimen name="info_icon_width">160dp</dimen>
+    <dimen name="info_icon_height">160dp</dimen>
+    <dimen name="videos_swipe_down_text_size">10sp</dimen>
+    <dimen name="videos_swipe_down_padding">2dip</dimen>
+    <dimen name="card_primary_text_size">18sp</dimen>
+    <dimen name="card_primary_text_top_padding">8dp</dimen>
+    <dimen name="card_primary_text_left_right_padding">16dp</dimen>
+    <dimen name="card_sub_text_size">14sp</dimen>
+    <dimen name="card_sub_text_top_padding">4dp</dimen>
+    <dimen name="card_sub_text_bottom_padding">4dp</dimen>
+    <dimen name="card_sub_text_left_right_padding">16dp</dimen>
+    <dimen name="card_action_padding">8dp</dimen>
+    <dimen name="card_ll_padding">8dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_elevation_max">8dp</dimen>
+    <dimen name="card_layout_margin">8dp</dimen>
+    <dimen name="card_play_button_shadow_radius">50dp</dimen>
+    <item name="icon_material_color_on_white_alpha" type="dimen" format="float">1.0</item>
+    <item name="icon_material_black_on_white_alpha" type="dimen" format="float">0.54</item>
+    <item name="icon_material_black_on_white_alpha_disabled" type="dimen" format="float">0.26</item>
+</resources>

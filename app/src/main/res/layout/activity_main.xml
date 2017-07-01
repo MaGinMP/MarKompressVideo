@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.maginmp.app.markompressvideo.activities.MainActivity"
+    android:background="@color/background">
+    
+    <TextView
+        android:id="@+id/appTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/titleBarTextSize"
+        android:padding="@dimen/titleBarPadding"
+        android:text="@string/app_name"
+        android:gravity="center"
+        android:textColor="@color/secondary_text"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:background="@color/background_ab"
+        android:elevation="@dimen/titleBarElevation"/>
+
+    <FrameLayout
+        android:id="@+id/contentContainer"
+        android:layout_below="@id/appTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomBar">
+    </FrameLayout>
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:bb_behavior="shifting"
+        android:layout_alignParentBottom="true"
+        app:bb_activeTabColor="@color/icons"
+        app:bb_tabXmlResource="@xml/bottombar_tabs" />
+
+</RelativeLayout>
