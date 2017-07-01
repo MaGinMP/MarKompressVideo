@@ -4,7 +4,7 @@ An Android app that is designed to automatically and visually lossless re-encode
 
 ## Getting Started
 
-You can get the release APK from [Google Play Store](Placeholder) or from [Releases](Placeholder) on Github.
+You can get the release APK from [Google Play Store](Placeholder) or from [Releases](https://github.com/MaGinMP/MarKompressVideo/releases) on Github.
 
 The entire source code to build the app, including resources and tests, is available in this repository. No prerequisites needed.
 
@@ -22,13 +22,13 @@ At the moment, the project is configured so it runs all the JVM tests before run
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](placeholder) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
 
-* **Mark Gintsburg** - *Initial work and project lead* - [MaGinMP](Placeholder)
+* **Mark Gintsburg** - *Initial work and project lead* - [MaGinMP](https://github.com/MaGinMP)
 
-See also the list of [contributors](https://github.com/tbd/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/MaGinMP/MarKompressVideo/contributors) who participated in this project.
 
 ## License
 
