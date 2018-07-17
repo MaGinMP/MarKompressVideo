@@ -81,7 +81,7 @@ public class WelcomeScreenActivity extends WelcomeActivity {
                 .page(new BasicPage(R.drawable.welcome_gpl_v3_logo,
                         getString(R.string.welcome_screen_7_title),
                         getString(R.string.welcome_screen_7_body))
-                        .background(R.color.welcome_screen_1)
+                        .background(R.color.welcome_screen_7)
                 )
 
                 .swipeToDismiss(true)

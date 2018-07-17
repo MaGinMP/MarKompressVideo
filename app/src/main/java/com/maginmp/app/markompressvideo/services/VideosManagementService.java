@@ -82,9 +82,9 @@ public class VideosManagementService extends Service {
     private static final int SRC_FILESIZE_MULT = 2;
     private static final HashMap<String, String> X264_CRF_MAP = new HashMap<>();
     private static final HashMap<String, String> AUDIO_QUALITY_MAP = new HashMap<>();
-    private static final long FFMPEG_ENCODE_TIMEOUT_MILLIS = ResourcesUtils.hoursToMilis(6); // 6 hours
+    private static final long FFMPEG_ENCODE_TIMEOUT_MILLIS = ResourcesUtils.hoursToMilis(8); // 8 hours
     private static final int SLEEP_TIME_INTERVALS_ENCODE = 3 * 1000; // 3 sec
-    private static final long SLEEP_TIME_INTERVALS_FILE_CLEANUPER = ResourcesUtils.hoursToMilis(1); //1 hour
+    private static final long SLEEP_TIME_INTERVALS_FILE_CLEANUPER = ResourcesUtils.hoursToMilis(0.25f); //15 minutes
     private static final long SLEEP_TIME_INTERVALS_WAIT_FOR_CLEANER_FINISH = 10 * 1000; //10 seconds
     private static final long SLEEP_TIME_CANCELED_WAIT_TO_CLOSE = 2 * 1000; //2 sec.
     private static final int MESSAGE_REFRESH_DATABASE = 0;
@@ -427,6 +427,12 @@ public class VideosManagementService extends Service {
                     encSuc = false;
                 }
 
+                // If the charger is weak, the device may get discharged even though it is connected
+                // to USB and shows charging state. Thus after each ffmpeg run check if the device
+                // is in 'encoding state'
+                // Update: No need as cleanup thread patch takes care of it.
+                // ResourcesUtils.deviceEncoderStateUpdater(mSharedPreferences, null, VideosManagementService.this);
+
 
                 if (encSuc) {
                     // get MD5
@@ -440,10 +446,13 @@ public class VideosManagementService extends Service {
                         Startup.ERROR_COLLECTOR.addError(err);
                     }
                     if (encSuc) {
-                        // Check if swap is bit accurate
-                        if (file1Md5 != MD5.calculateMD5(video.getmBackupFile()) || file2Md5 != MD5.calculateMD5(video.getmFile())) {
+                        // Check if swap is bit exact
+                        if (!file1Md5.equals(MD5.calculateMD5(video.getmBackupFile())) || !file2Md5.equals(MD5.calculateMD5(video.getmFile()))) {
+                            String err = TAG + " File swap not bit exact: " + video.getmFile().getName() + " <--> " + video.getmBackupFile().getName();
+                            Log.e(TAG, err);
+                            Startup.ERROR_COLLECTOR.addError(err);
                             // TODO Future task: try to at least revert source.
-                            // TODO MD5 of file1 is calculated in encode() think about better design
+                            // TODO MD5 of file1 is calculated in encode() think about better design --> no need, too deep (inside FileUtils.constructBackupFile)
                         }
                         //Update DB
                         if (!postEncodeUpdateDb(video, videosDataSource)) {
@@ -554,12 +563,12 @@ public class VideosManagementService extends Service {
                         encCmd.add(AUDIO_QUALITY_MAP.get(audioProcStr));
                     }
 
-                    //Embed MKV metadata to video
-                    encCmd.add("-metadata");
-                    encCmd.add("comment=Encoded using " + MainActivity.MKV_METADATA_STAMP[0] + " app");
-
-
                     encCmd.add("-y"); //silently overwrite
+
+                    //Embed MKV metadata to video
+                    video.setmFfmpegCmd(TextUtils.join(" ", encCmd));
+                    encCmd.add("-metadata");
+                    encCmd.add("comment=" + video.toString());
 
                     //output file path
                     File out = new File(MainActivity.MKV_DIRECTORY, video.getmFile().getName());
@@ -569,6 +578,9 @@ public class VideosManagementService extends Service {
                         e.printStackTrace();
                         failed = true;
                     }
+
+                    if (!out.getParentFile().canWrite())
+                        failed = true;
 
                     if (!failed) {
                         String[] encCmdArr = encCmd.toArray(new String[encCmd.size()]);
@@ -713,6 +725,12 @@ public class VideosManagementService extends Service {
         @Override
         public void run() {
             while (true) {
+
+                //patch
+                //Unfortunately not always full battery fires a broadcast, thus the encoding readiness
+                //should be checked from time to time.
+                ResourcesUtils.deviceEncoderStateUpdater(mSharedPreferences, null, VideosManagementService.this);
+
                 try {
                     Thread.sleep(SLEEP_TIME_INTERVALS_FILE_CLEANUPER);
                 } catch (InterruptedException e) {

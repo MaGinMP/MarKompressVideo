@@ -27,7 +27,7 @@
         <item>1000</item>
     </string-array>
     <string-array name="settings_entries_audio_q">
-        <item>Don\'t touch</item>
+        <item>Keep source</item>
         <item>Decent</item>
         <item>High</item>
     </string-array>

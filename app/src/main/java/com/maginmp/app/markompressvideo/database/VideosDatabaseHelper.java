@@ -197,7 +197,7 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         Log.v(TAG, "Upgrading database from version " + i + " to " + i1 + ", which will destroy all old data");
-        //TODO [HIGH PRIORITY] for release 2 should implement table value to value copy instead of dropping!
+        //TODO [HIGH PRIORITY] for db version 2 should implement table value to value copy instead of dropping!
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(sqLiteDatabase);
     }

@@ -65,8 +65,12 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
     };
     public static final int APP_PERMISSIONS_REQUEST_CODE = 1;
     public static final String[] VIDEO_FILE_EXTENSIONS = {".mp4", ".mov"};
-    public static final File MKV_DIRECTORY = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "MKV");
+    public static final String MKV_NAME = "MKV";
+    public static final File MKV_DIRECTORY = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), MainActivity.MKV_NAME);
     public static final String[] MKV_METADATA_STAMP = {"MarKompress"}; //If name changed, add to array. Needed for metadata parse
+    public static final int MKV_METADATA_STAMP_IDX = 0; //The index of the currently chosen MainActivity.MKV_METADATA_STAMP
+    public static final String MKV_METADATA_DELIMITER = ";;";
+    public static final String MKV_METADATA_DELIMITER_READ = "\\;\\;"; //ffmpeg adds escape chars
     public static final int NOTIFICATION_ID_ERROR_COLLECTOR = 3;
     public static final int NOTIFICATION_ID_ERROR_FFUNSUPPORTED = 2;
     public static final int NOTIFICATION_ID_FG_SERVICE = 1;

@@ -34,6 +34,8 @@ import com.maginmp.app.markompressvideo.R;
 import com.maginmp.app.markompressvideo.activities.MainActivity;
 import com.maginmp.app.markompressvideo.services.VideosManagementService;
 
+import static java.lang.Math.round;
+
 /**
  * Created by MarkGintsburg on 16/06/2017.
  */
@@ -139,8 +141,8 @@ public class ResourcesUtils {
     }
 
 
-    public static long hoursToMilis(int hours) {
-        return hours * 60 * 60 * 1000;
+    public static long hoursToMilis(float hours) {
+        return round(hours * 60 * 60 * 1000);
     }
 
 

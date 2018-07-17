@@ -19,3 +19,6 @@
 -keepclassmembers class * extends com.stephentuso.welcome.WelcomeActivity {
     public static java.lang.String welcomeKey();
 }
+
+# According to https://github.com/roughike/BottomBar/issues/456
+-dontwarn com.roughike.bottombar.**

@@ -20,14 +20,22 @@
 
 package com.maginmp.app.markompressvideo.utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.maginmp.app.markompressvideo.R;
+import com.maginmp.app.markompressvideo.activities.MainActivity;
 import com.maginmp.app.markompressvideo.database.VideosDatabaseHelper;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Created by MarkGintsburg on 16/06/2017.
@@ -112,5 +120,69 @@ public class StringUtils {
         return statusStr;
     }
 
+    /**
+     * Translates ContentValues to String ready to be embed in metadata
+     *
+     * @param contentValues The content values to embed
+     * @param keysToConvert The keys to embed
+     * @return String ready to embed
+     */
+    @NonNull
+    public static String contentValuesToString(ContentValues contentValues, String[] keysToConvert) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(MainActivity.MKV_METADATA_STAMP[MainActivity.MKV_METADATA_STAMP_IDX]);
+        for (int i = 0; i < keysToConvert.length; i++) {
+            sb.append(MainActivity.MKV_METADATA_DELIMITER);
+            sb.append(keysToConvert[i]);
+            sb.append("=");
+            sb.append(contentValues.getAsString(keysToConvert[i]));
+        }
+        sb.append(MainActivity.MKV_METADATA_DELIMITER);
+        return sb.toString();
+    }
 
+    /**
+     * Convert embed MKV metadata string to ContentValues
+     *
+     * @param str           The relevant metadata part (for example after "comment="). Must start with MainActivity.MKV_METADATA_STAMP
+     * @param KeysToExtract Which keys to extract
+     * @return ContentValues
+     */
+    @Nullable
+    public static ContentValues StringToContentValues(String str, String[] KeysToExtract) {
+        String[] strSplit = str.split(Pattern.quote(MainActivity.MKV_METADATA_DELIMITER_READ));
+        if (strSplit == null || strSplit.length == 0)
+            return null;
+
+        if (!Arrays.asList(MainActivity.MKV_METADATA_STAMP).contains(strSplit[0]))
+            return null;
+
+        ContentValues contentValues = new ContentValues();
+
+        for (int i = 0; i < strSplit.length; i++) {
+            String[] strSplitSplit = strSplit[i].split(Pattern.quote("\\="), 2);
+            if (strSplitSplit != null && strSplitSplit.length == 2 && Arrays.asList(KeysToExtract).contains(strSplitSplit[0]))
+                contentValues.put(strSplitSplit[0], strSplitSplit[1]);
+        }
+
+        return contentValues;
+    }
+
+
+    /**
+     * Removes an element from an array. Note: not for big arrays (might be inefficient)
+     *
+     * @param arr     The array to remove the element from
+     * @param element The element to remove
+     * @param <T>     Any object sub type
+     * @return The new array without the element
+     */
+    public static <T> T[] removeElementFromArray(T[] arr, T element) {
+        if (arr == null)
+            return null;
+        List<T> arrList = new LinkedList<>(Arrays.asList(arr));
+        arrList.remove(element);
+        return (T[]) arrList.toArray(new CharSequence[arrList.size()]);
+        //todo Avoid this cast, otherwise will crash on non charseq!
+    }
 }

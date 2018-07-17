@@ -45,7 +45,7 @@
     <string name="videos_card_revert">Revert</string>
     <string name="keysetting_is_ffmpeg_supported">is_ffmpeg_supported</string>
     <string name="dialog_device_not_supported_title">MarKompress is not supported</string>
-    <string name="dialog_device_not_supported_message">We are sorry to infrom that at this stage MarKompress Video is not supported on this device. Reason: the app failed to load FFMPEG library. You may contact the developer for more information.</string>
+    <string name="dialog_device_not_supported_message">We are sorry to inform that at this stage MarKompress Video is not supported on this device. Reason: the app failed to load FFMPEG library. You may contact the developer for more information.</string>
     <string name="notification_error_title">Error</string>
     <string name="notification_error_send_to_dev">An error occurred. Please send this notification screenshot to the developer:</string>
     <string name="videos_card_status_queue">in queue</string>

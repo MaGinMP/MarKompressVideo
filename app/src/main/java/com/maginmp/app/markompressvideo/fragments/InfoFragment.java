@@ -58,7 +58,7 @@ public class InfoFragment extends Fragment {
         super.onStart();
         new AboutIt(getActivity()).app(StringUtils.getApplicationName(getActivity()))
                 .buildInfo(BuildConfig.DEBUG, BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME)
-                .copyright("Mark Gintsburg\nUnder GPL v3.0 license")
+                .copyright("Mark Gintsburg\nmaginmp@gmail.com\nUnder GPL v3.0 license")
                 .description(R.string.info_text_description)
                 .year(2017)
                 .libLicense("ExpandableLayout", "Daniel Cachapa", L.AP2, "https://github.com/cachapa/ExpandableLayout")

@@ -66,6 +66,12 @@ public class VideoObject {
     private Date mProcessedDate;
     private int mStatus; // According to STATUS_* from VideoDatabaseHelper
 
+    // Keys that will be embed in mp4 comment
+    private static String[] KEYS_TO_CONVERT = {VideosDatabaseHelper.COL_VIDEO_BU_PATH, VideosDatabaseHelper.COL_ORIG_VIDEO_DIMEN,
+            VideosDatabaseHelper.COL_ORIG_FILE_SIZE, VideosDatabaseHelper.COL_ENCODE_TIME,
+            VideosDatabaseHelper.COL_FFMPEG_CMD, VideosDatabaseHelper.COL_APP_VERSION,
+            VideosDatabaseHelper.COL_PROC_DATE};
+
     public VideoObject(long mId, File mFile, File mBackupFile, byte[] mThumbnail, int mSourceWidth, int mSourceHeight, int mTargetWidth, int mTargetHeight, long mSourceFilesize, long mTargetFilesize, long mDurationMilisec, int mStatus) {
         this.mId = mId;
         this.mFile = mFile;
@@ -83,10 +89,25 @@ public class VideoObject {
 
     public VideoObject(File mFile, String metadata, Context context) throws Exception {
 
+        ContentValues cvMetadata = null;
+
+        // metadata extract
+        if (metadata != null) {
+            String commentStr = "comment=";
+            //substring from the end of 'comment=' till the last ;; after 'comment='
+            if (metadata.toLowerCase().indexOf(commentStr.toLowerCase()) != -1) {
+                String commentSection = metadata.substring(
+                        metadata.toLowerCase().indexOf(commentStr.toLowerCase()) + commentStr.length(),
+                        metadata.toLowerCase().lastIndexOf(
+                                MainActivity.MKV_METADATA_DELIMITER_READ));
+                cvMetadata = StringUtils.StringToContentValues(commentSection, VideoObject.KEYS_TO_CONVERT);
+            }
+        }
+
         this.mId = -1; // temp vid file
 
         if (!mFile.exists())
-            throw new Exception("Can create video from File. Reason: File does not exist");
+            throw new Exception("Cannot create video from File. Reason: File does not exist");
         this.mFile = mFile;
 
         this.mThumbnail = ImageVideoUtils.getJpegThumbFromVideo(mFile);
@@ -109,40 +130,90 @@ public class VideoObject {
 
 
         this.mStatus = VideosDatabaseHelper.STATUS_QUEUE;
-        for (int i = 0; i < MainActivity.MKV_METADATA_STAMP.length; i++) {
-            // If the video has MKV stamp, it means it was already precessed in the past
-            // and maybe db was erased or the video was removed and brought back later.
-            // Mark as "done"
-            if (metadata.contains(MainActivity.MKV_METADATA_STAMP[i])) {
-                if (!this.mIsRevetable) {
-                    this.mSourceWidth = 0;
-                    this.mSourceHeight = 0;
-                    this.mSourceFilesize = -1;
-                } else {
-                    wxhxlen = ImageVideoUtils.getWidthHeightFromVideo(mBackupFile);
-                    this.mSourceWidth = wxhxlen[0];
-                    this.mSourceHeight = wxhxlen[1];
-                    this.mSourceFilesize = mBackupFile.length();
-                }
-                this.mStatus = VideosDatabaseHelper.STATUS_DONE;
-                break;
-            }
-        }
 
         this.mEncodeTime = 0;
         this.mFfmpegCmd = "NULL";
 
         this.mAppVersion = BuildConfig.VERSION_CODE;
 
-        this.mIsBypassProc = (mStatus & (VideosDatabaseHelper.STATUS_BYPASS | VideosDatabaseHelper.STATUS_DELETED | VideosDatabaseHelper.STATUS_DONE | VideosDatabaseHelper.STATUS_REVERTED | VideosDatabaseHelper.STATUS_ERROR)) != 0;
-        this.mIsShowInList = (mStatus & VideosDatabaseHelper.STATUS_DELETED) != 0;
-
         Long now = System.currentTimeMillis();
         this.mAddedToQueueDate = new Date(now);
         this.mProcessedDate = new Date(now - 1); // for sanity check later
 
-        if ((this.mStatus & VideosDatabaseHelper.STATUS_DONE) == VideosDatabaseHelper.STATUS_DONE)
-            this.mProcessedDate = new Date(mFile.lastModified());
+        if (cvMetadata != null) {
+            // If the video has MKV stamp, it means it was already precessed in the past
+            // and maybe db was erased or the video was removed and brought back later.
+            // Mark as "done"
+
+
+            // check if metadata points to different backup file
+            // done for back compatibility
+            if (!this.mIsRevetable) {
+                String bu = cvMetadata.getAsString(VideosDatabaseHelper.COL_VIDEO_BU_PATH);
+                if (bu != null) {
+                    File buF = new File(bu);
+                    this.mIsRevetable = buF.exists();
+                    mBackupFile = buF;
+                }
+            }
+
+            if (!this.mIsRevetable) {
+                this.mSourceWidth = 0;
+                this.mSourceHeight = 0;
+                this.mSourceFilesize = -1;
+            } else {
+                wxhxlen = ImageVideoUtils.getWidthHeightFromVideo(mBackupFile);
+                this.mSourceWidth = wxhxlen[0];
+                this.mSourceHeight = wxhxlen[1];
+                this.mSourceFilesize = mBackupFile.length();
+            }
+
+
+            if (!this.mIsRevetable) {
+                String dimen = cvMetadata.getAsString(VideosDatabaseHelper.COL_ORIG_VIDEO_DIMEN);
+                if (dimen != null) {
+                    int[] wxh = StringUtils.dimenToWidthAndHeight(dimen);
+                    this.mSourceWidth = wxh[0];
+                    this.mSourceHeight = wxh[1];
+                }
+                String fSize = cvMetadata.getAsString(VideosDatabaseHelper.COL_ORIG_FILE_SIZE);
+                if (fSize != null) {
+                    this.mSourceFilesize = Long.parseLong(fSize);
+                }
+            }
+
+            String tmpStr = cvMetadata.getAsString(VideosDatabaseHelper.COL_ENCODE_TIME);
+            if (tmpStr != null) {
+                this.mEncodeTime = Long.parseLong(tmpStr);
+            }
+
+            tmpStr = cvMetadata.getAsString(VideosDatabaseHelper.COL_FFMPEG_CMD);
+            if (tmpStr != null) {
+                this.mFfmpegCmd = tmpStr;
+            }
+
+            tmpStr = cvMetadata.getAsString(VideosDatabaseHelper.COL_APP_VERSION);
+            if (tmpStr != null) {
+                this.mAppVersion = Integer.parseInt(tmpStr);
+            }
+
+            tmpStr = cvMetadata.getAsString(VideosDatabaseHelper.COL_PROC_DATE);
+            if (tmpStr != null) {
+                this.mProcessedDate = new Date(Long.parseLong(tmpStr));
+            }
+
+            this.mStatus = VideosDatabaseHelper.STATUS_DONE;
+
+        }
+
+        this.mIsBypassProc = (mStatus & (VideosDatabaseHelper.STATUS_BYPASS | VideosDatabaseHelper.STATUS_DELETED | VideosDatabaseHelper.STATUS_DONE | VideosDatabaseHelper.STATUS_REVERTED | VideosDatabaseHelper.STATUS_ERROR)) != 0;
+        this.mIsShowInList = (mStatus & VideosDatabaseHelper.STATUS_DELETED) != 0;
+
+        if ((this.mStatus & VideosDatabaseHelper.STATUS_DONE) == VideosDatabaseHelper.STATUS_DONE) {
+            Date dateTmp = new Date(mFile.lastModified());
+            if (dateTmp.before(this.mProcessedDate))
+                this.mProcessedDate = dateTmp;
+        }
     }
 
 
@@ -193,6 +264,13 @@ public class VideoObject {
         values.put(VideosDatabaseHelper.COL_ADDED_TO_QUEUE_DATE, mAddedToQueueDate.getTime());
         values.put(VideosDatabaseHelper.COL_PROC_DATE, mProcessedDate.getTime());
         return values;
+    }
+
+    @Override
+    public String toString() {
+
+        return StringUtils.contentValuesToString(this.toContentValues(), VideoObject.KEYS_TO_CONVERT);
+
     }
 
     public File getmFile() {

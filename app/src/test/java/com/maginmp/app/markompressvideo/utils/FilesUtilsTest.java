@@ -42,8 +42,11 @@ public class FilesUtilsTest {
     @Test
     public void listAllDirectories() throws Exception {
         CharSequence[] result = FilesUtils.listAllDirectories(new File(MKV_TEST_CONTENT + "/folders"));
+        Arrays.sort(result);
         CharSequence[] expected  = {"Camera", "Foo", "Screenshots"};
+        Arrays.sort(expected);
         CharSequence[] expectedMac  = {".DS_Store", "Camera", "Foo", "Screenshots"};
+        Arrays.sort(expectedMac);
         if (expected.length == result.length)
             assertArrayEquals(expected, result);
         else
@@ -69,6 +72,8 @@ public class FilesUtilsTest {
         }
 
         String[] expected = {"SampleVideo_1280x720_1mb.mp4","small.mp4","SampleVideo_1280x720_2mb.mp4"};
+        Arrays.sort(expected);
+        Arrays.sort(result);
         assertArrayEquals(expected, result);
         assertTrue((new File(rootDir + "/Screenshots/pnggrad16rgb.png")).isFile());
     }

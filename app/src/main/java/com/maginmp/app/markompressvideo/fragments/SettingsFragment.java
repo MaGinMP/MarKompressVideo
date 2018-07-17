@@ -27,8 +27,10 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 
 import com.maginmp.app.markompressvideo.R;
+import com.maginmp.app.markompressvideo.activities.MainActivity;
 import com.maginmp.app.markompressvideo.utils.FilesUtils;
 import com.maginmp.app.markompressvideo.utils.PermissionsUtils;
+import com.maginmp.app.markompressvideo.utils.StringUtils;
 
 import java.io.File;
 
@@ -55,8 +57,17 @@ public class SettingsFragment extends PreferenceFragment {
         File dcimDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
 
         if (dcimDir != null) {
-            CharSequence[] entries = FilesUtils.listAllDirectories(dcimDir);
-            CharSequence[] entryValues = FilesUtils.listAllDirectories(dcimDir);
+            CharSequence[] dirs = FilesUtils.listAllDirectories(dcimDir);
+
+            //remove mkv from search path
+            dirs = StringUtils.removeElementFromArray(dirs, MainActivity.MKV_NAME);
+
+            CharSequence[] entries = null;
+            CharSequence[] entryValues = null;
+            if (dirs != null) {
+                entries = dirs.clone();
+                entryValues = dirs.clone();
+            }
             mMslp.setEntries(entries);
             mMslp.setEntryValues(entryValues);
 
