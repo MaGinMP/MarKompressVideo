@@ -138,7 +138,7 @@ public class FilesUtils {
      * @param outputFile
      * @return true on success false otherwise
      */
-    public static boolean moveFile(File inputFile, File outputFile) {
+    private static boolean moveFile(File inputFile, File outputFile) {
 
         return inputFile.renameTo(outputFile);
 
@@ -247,7 +247,7 @@ public class FilesUtils {
      * @param md5  file md5 digest
      * @return backup file
      */
-    public static File constructBackupFile(File file, String md5) {
+    private static File constructBackupFile(File file, String md5) {
         int lenThresh = 0; //defines how many chars from file name
         String basename = file.getName().length() > lenThresh ? file.getName().substring(0, lenThresh) : file.getName();
         return new File(MainActivity.MKV_DIRECTORY, basename.replace('.', '_') + md5 + VideosManagementService.BACKUP_FILE_EXTENSION);

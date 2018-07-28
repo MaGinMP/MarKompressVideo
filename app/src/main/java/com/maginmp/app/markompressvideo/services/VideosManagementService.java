@@ -33,7 +33,7 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -60,6 +60,7 @@ import com.maginmp.app.markompressvideo.utils.ThreadsUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,7 +85,7 @@ public class VideosManagementService extends Service {
     private static final HashMap<String, String> AUDIO_QUALITY_MAP = new HashMap<>();
     private static final long FFMPEG_ENCODE_TIMEOUT_MILLIS = ResourcesUtils.hoursToMilis(8); // 8 hours
     private static final int SLEEP_TIME_INTERVALS_ENCODE = 3 * 1000; // 3 sec
-    private static final long SLEEP_TIME_INTERVALS_FILE_CLEANUPER = ResourcesUtils.hoursToMilis(0.25f); //15 minutes
+    private static final long SLEEP_TIME_INTERVALS_FILE_CLEANUPER = ResourcesUtils.hoursToMilis(0.05f); //3 minutes
     private static final long SLEEP_TIME_INTERVALS_WAIT_FOR_CLEANER_FINISH = 10 * 1000; //10 seconds
     private static final long SLEEP_TIME_CANCELED_WAIT_TO_CLOSE = 2 * 1000; //2 sec.
     private static final int MESSAGE_REFRESH_DATABASE = 0;
@@ -121,7 +122,7 @@ public class VideosManagementService extends Service {
             if (key.equals(getString(R.string.keysetting_videos_is_refreshing))) {
                 boolean isRefreshing = mSharedPreferences.getBoolean(key, false);
                 if (isRefreshing && isPermissionsGranted) {
-                    (new VideoManagementAsyncTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MESSAGE_REFRESH_DATABASE);
+                    (new VideoManagementAsyncTask(VideosManagementService.this)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MESSAGE_REFRESH_DATABASE);
                 }
             } else if (key.equals(getString(R.string.keysetting_enable_service))) // service was enabled in settings
             {
@@ -132,7 +133,7 @@ public class VideosManagementService extends Service {
                 {
                     NotificationCompat.Builder notification = setFgNotification(getString(R.string.notification_fg_service_on_message));
                     startForeground(MainActivity.NOTIFICATION_ID_FG_SERVICE, notification.build());
-                    (new VideoManagementAsyncTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MESSAGE_START_ENCODING);
+                    (new VideoManagementAsyncTask(VideosManagementService.this)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MESSAGE_START_ENCODING);
                 } else if (!IS_DEVICE_STATE_ENCODING_READY && IS_ENCODING) // Cancel encoding
                 {
                     IS_FFMPEG_CANCELED = true;
@@ -141,7 +142,9 @@ public class VideosManagementService extends Service {
                     NotificationCompat.Builder notification = setFgNotification(getString(R.string.notification_fg_service_on_message_cancelling));
                     NotificationManager mNotificationManager =
                             (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    mNotificationManager.notify(MainActivity.NOTIFICATION_ID_FG_SERVICE, notification.build());
+                    if (mNotificationManager != null) {
+                        mNotificationManager.notify(MainActivity.NOTIFICATION_ID_FG_SERVICE, notification.build());
+                    }
                 }
             }
         }
@@ -198,7 +201,7 @@ public class VideosManagementService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         return
-                (android.support.v7.app.NotificationCompat.Builder) new NotificationCompat.Builder(VideosManagementService.this)
+                 new NotificationCompat.Builder(VideosManagementService.this, "M_CH_ID")
                         .setSmallIcon(R.mipmap.icon_mkv)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_mkv))
                         .setContentTitle(StringUtils.getApplicationName(VideosManagementService.this) + " | " + getString(R.string.notification_fg_service_on_title))
@@ -234,19 +237,25 @@ public class VideosManagementService extends Service {
         ResourcesUtils.broadcastResult(inQueueCount, updatedCursorPos, mBroadcaster);
     }
 
-    private final class StatusUpdater {
+    private static final class StatusUpdater {
         private VideoObject video;
         private int idx;
         private int totalOf;
     }
 
-    private final class ResultUpdater {
+    private static final class ResultUpdater {
         private int countSuc = 0;
         private int countFail = 0;
     }
 
-    private class VideoManagementAsyncTask extends AsyncTask<Integer, StatusUpdater, ResultUpdater> {
+    private static class VideoManagementAsyncTask extends AsyncTask<Integer, StatusUpdater, ResultUpdater> {
+        private WeakReference<VideosManagementService> mServiceReference;
         private int mOperation;
+
+        VideoManagementAsyncTask(VideosManagementService context)
+        {
+            mServiceReference = new WeakReference<>(context);
+        }
 
         @Override
         protected ResultUpdater doInBackground(Integer... integers) {
@@ -272,26 +281,37 @@ public class VideosManagementService extends Service {
 
         @Override
         protected void onProgressUpdate(StatusUpdater... progress) {
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return;
             StatusUpdater progress0 = progress[0];
-            String status = String.format(getString(R.string.notification_fg_service_on_message_clips_status), progress0.idx, progress0.totalOf, progress0.video.getmFile().getName());
-            NotificationCompat.Builder notification = setFgNotification(status);
+            String status = String.format(serviceWeakRef.getString(R.string.notification_fg_service_on_message_clips_status), progress0.idx, progress0.totalOf, progress0.video.getmFile().getName());
+            NotificationCompat.Builder notification = serviceWeakRef.setFgNotification(status);
             NotificationManager mNotificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(MainActivity.NOTIFICATION_ID_FG_SERVICE, notification.build());
+                    (NotificationManager) serviceWeakRef.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (mNotificationManager != null) {
+                mNotificationManager.notify(MainActivity.NOTIFICATION_ID_FG_SERVICE, notification.build());
+            }
         }
 
         @Override
         protected void onPostExecute(ResultUpdater result) {
-            NotificationManager mNotificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.cancel(MainActivity.NOTIFICATION_ID_FG_SERVICE);
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return;
+            NotificationManager mNotificationManager;
+            mNotificationManager = (NotificationManager) serviceWeakRef.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (mNotificationManager != null) {
+                mNotificationManager.cancel(MainActivity.NOTIFICATION_ID_FG_SERVICE);
+            }
         }
 
         private void refreshDb() {
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return;
+
             CodeStopwatch timer = new CodeStopwatch();
 
-            ArrayList<File> dirsScanAllVideoFiles = FilesUtils.getAllVideoFilesInDirs(VideosManagementService.this, mSharedPreferences);
-            VideosDataSource videosDataSource = new VideosDataSource(VideosManagementService.this);
+            ArrayList<File> dirsScanAllVideoFiles = FilesUtils.getAllVideoFilesInDirs(serviceWeakRef, serviceWeakRef.mSharedPreferences);
+            VideosDataSource videosDataSource = new VideosDataSource(serviceWeakRef);
             videosDataSource.open();
 
 
@@ -337,7 +357,7 @@ public class VideosManagementService extends Service {
                     }
 
                     try {
-                        VideoObject video = new VideoObject(physicalFile, metadata, VideosManagementService.this);
+                        VideoObject video = new VideoObject(physicalFile, metadata, serviceWeakRef);
                         videosDataSource.addVideo(video);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -357,24 +377,27 @@ public class VideosManagementService extends Service {
             String q = "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_QUEUE + ")=" + VideosDatabaseHelper.STATUS_QUEUE + " OR " + "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_RUNNING + ")=" + VideosDatabaseHelper.STATUS_RUNNING + "";
             Cursor dbFindVideo = videosDataSource.getAllVideos(true, q, "ASC");
             int cursorCount = dbFindVideo.getCount();
-            broadcastResult(cursorCount, -1);
+            serviceWeakRef.broadcastResult(cursorCount, -1);
             dbFindVideo.close();
 
             videosDataSource.close();
 
             Log.i(TAG, "Refresh operation took " + timer.getTimeElapsed() + "millis");
 
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), false);
+            SharedPreferences.Editor editor = serviceWeakRef.mSharedPreferences.edit();
+            editor.putBoolean(serviceWeakRef.getString(R.string.keysetting_videos_is_refreshing), false);
             editor.commit();
         }
 
         private ResultUpdater startEncoding() {
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return null;
+
             IS_ENCODING = true;
 
             ResultUpdater result = new ResultUpdater();
 
-            VideosDataSource videosDataSource = new VideosDataSource(VideosManagementService.this);
+            VideosDataSource videosDataSource = new VideosDataSource(serviceWeakRef);
             videosDataSource.open();
 
             // Find all video with 'queue' status
@@ -399,7 +422,7 @@ public class VideosManagementService extends Service {
                 video.setmStatus(VideosDatabaseHelper.STATUS_RUNNING);
                 videosDataSource.updateVideoStatus(video.getmStatus(), video.getmId());
 
-                broadcastResult(-1, dbFindVideo.getPosition());
+                serviceWeakRef.broadcastResult(-1, dbFindVideo.getPosition());
 
                 // Encode
                 video = encode(video);
@@ -409,7 +432,7 @@ public class VideosManagementService extends Service {
                     videosDataSource.updateVideoStatus(video.getmStatus(), video.getmId());
 
                     // Send broadcast about change in video db to UI
-                    broadcastResult(cursorCount - result.countSuc - result.countFail, dbFindVideo.getPosition());
+                    serviceWeakRef.broadcastResult(cursorCount - result.countSuc - result.countFail, dbFindVideo.getPosition());
 
                     break;
                 }
@@ -419,7 +442,7 @@ public class VideosManagementService extends Service {
                     video.setmStatus(VideosDatabaseHelper.STATUS_DONE);
 
                 // If the encoded file size larger than source: bypass
-                if (video.getmTargetFilesize() > video.getmSourceFilesize())
+                if (video != null && video.getmTargetFilesize() > video.getmSourceFilesize())
                 {
                     video.setmStatus(VideosDatabaseHelper.STATUS_BYPASS);
                     videosDataSource.updateVideoStatus(video.getmStatus(), video.getmId());
@@ -438,6 +461,8 @@ public class VideosManagementService extends Service {
                     // get MD5
                     String file1Md5 = MD5.calculateMD5(video.getmFile());
                     String file2Md5 = MD5.calculateMD5(video.getmBackupFile());
+                    if (file1Md5 == null || file2Md5 == null)
+                        encSuc = false;
                     // Swap swap encoded with orig
                     if (!FilesUtils.swapFiles(video)) {
                         encSuc = false;
@@ -464,7 +489,7 @@ public class VideosManagementService extends Service {
 
                         if (encSuc) {
                             videosDataSource.updateVideoStatus(video.getmStatus(), video.getmId());
-                            if (Integer.parseInt(mSharedPreferences.getString(getString(R.string.keysetting_file_keep_time), getString(R.string.settings_file_keep_time_def))) == 0) {
+                            if (Integer.parseInt(serviceWeakRef.mSharedPreferences.getString(serviceWeakRef.getString(R.string.keysetting_file_keep_time), serviceWeakRef.getString(R.string.settings_file_keep_time_def))) == 0) {
                                 // If no keep time -> delete
                                 video.setmIsRevetable(false);
                                 FilesUtils.delFile(video.getmBackupFile());
@@ -482,7 +507,7 @@ public class VideosManagementService extends Service {
                     result.countFail++;
 
                 // Send broadcast about change in video db to UI
-                broadcastResult(cursorCount - result.countSuc - result.countFail, dbFindVideo.getPosition());
+                serviceWeakRef.broadcastResult(cursorCount - result.countSuc - result.countFail, dbFindVideo.getPosition());
 
                 dbFindVideo.moveToNext();
             }
@@ -490,7 +515,7 @@ public class VideosManagementService extends Service {
 
             dbFindVideo.close();
             videosDataSource.close();
-            stopForeground(true);
+            serviceWeakRef.stopForeground(true);
             IS_ENCODING = false;
 
             return result;
@@ -503,6 +528,9 @@ public class VideosManagementService extends Service {
 
 
         private VideoObject encode(VideoObject video) {
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return null;
+
             boolean failed = false;
 
             if (MainActivity.MKV_DIRECTORY.getFreeSpace() > SRC_FILESIZE_MULT * video.getmSourceFilesize()) {
@@ -532,12 +560,12 @@ public class VideosManagementService extends Service {
                     encCmd.add("slow");
 
                     // Video quality
-                    String vqStr = mSharedPreferences.getString(getString(R.string.keysetting_video_q), getString(R.string.settings_video_q_def));
+                    String vqStr = serviceWeakRef.mSharedPreferences.getString(serviceWeakRef.getString(R.string.keysetting_video_q), serviceWeakRef.getString(R.string.settings_video_q_def));
                     encCmd.add("-crf");
                     encCmd.add(X264_CRF_MAP.get(vqStr));
 
                     // Video scale
-                    String scaleConditionStr = mSharedPreferences.getString(getString(R.string.keysetting_video_dimen_limit), getString(R.string.settings_video_dimen_limit));
+                    String scaleConditionStr = serviceWeakRef.mSharedPreferences.getString(serviceWeakRef.getString(R.string.keysetting_video_dimen_limit), serviceWeakRef.getString(R.string.settings_video_dimen_limit));
                     int scaleCondition = Integer.parseInt(scaleConditionStr);
                     if (video.getmSourceHeight() > scaleCondition) {
                         encCmd.add("-vf");
@@ -551,7 +579,7 @@ public class VideosManagementService extends Service {
                     }
 
                     // Audio stream copy / process
-                    String audioProcStr = mSharedPreferences.getString(getString(R.string.keysettings_audio_q), getString(R.string.settings_audio_q_def));
+                    String audioProcStr = serviceWeakRef.mSharedPreferences.getString(serviceWeakRef.getString(R.string.keysettings_audio_q), serviceWeakRef.getString(R.string.settings_audio_q_def));
                     int audioProc = Integer.parseInt(audioProcStr);
                     if (audioProc < 0) {
                         encCmd.add("-c:a");
@@ -586,7 +614,7 @@ public class VideosManagementService extends Service {
                         String[] encCmdArr = encCmd.toArray(new String[encCmd.size()]);
 
                         CodeStopwatch stopWatch = new CodeStopwatch();
-                        if (!FfmpegUtils.executeFfmpegSafely(FFMPEG, encCmdArr, FFMPEG_ENCODE_TIMEOUT_MILLIS, SLEEP_TIME_INTERVALS_ENCODE, mFfEncodeHandler))
+                        if (!FfmpegUtils.executeFfmpegSafely(serviceWeakRef.FFMPEG, encCmdArr, FFMPEG_ENCODE_TIMEOUT_MILLIS, SLEEP_TIME_INTERVALS_ENCODE, serviceWeakRef.mFfEncodeHandler))
                             failed = true;
 
                         if (IS_FFMPEG_CANCELED) {
@@ -633,6 +661,8 @@ public class VideosManagementService extends Service {
          * @throws IOException
          */
         private String getVideoFileMetadata(File videoFile) throws IOException {
+            VideosManagementService serviceWeakRef = mServiceReference.get();
+            if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return null;
 
             FilesUtils.mkDirIfNotExist(MainActivity.MKV_DIRECTORY);
             File MetadataDestfile = new File(MainActivity.MKV_DIRECTORY, "metadata.txt");
@@ -645,7 +675,7 @@ public class VideosManagementService extends Service {
             metadataCmd.add("-y");
             metadataCmd.add(MetadataDestfile.getCanonicalPath());
             String[] metadataCmdArr = metadataCmd.toArray(new String[metadataCmd.size()]);
-            if (!FfmpegUtils.executeFfmpegSafely(FFMPEG, metadataCmdArr, FFMPEG_METADATA_TIMEOUT_MILLIS, SLEEP_TIME_INTERVALS_GET_METADATA, mFfMetaResHandler))
+            if (!FfmpegUtils.executeFfmpegSafely(serviceWeakRef.FFMPEG, metadataCmdArr, FFMPEG_METADATA_TIMEOUT_MILLIS, SLEEP_TIME_INTERVALS_GET_METADATA, serviceWeakRef.mFfMetaResHandler))
                 return null;
             return FilesUtils.readTextFile(MetadataDestfile);
         }
@@ -723,6 +753,7 @@ public class VideosManagementService extends Service {
 
     private class FileCleanuper implements Runnable {
         @Override
+        @SuppressWarnings("InfiniteLoopStatement")
         public void run() {
             while (true) {
 
@@ -786,7 +817,7 @@ public class VideosManagementService extends Service {
 
                     String q = "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_QUEUE + ")=" + VideosDatabaseHelper.STATUS_QUEUE + " OR " + "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_RUNNING + ")=" + VideosDatabaseHelper.STATUS_RUNNING + "";
                     dbFindVideo = videosDataSource.getAllVideos(true, q);
-                    int cursorCount = dbFindVideo.getCount();
+                    //int cursorCount = dbFindVideo.getCount();
                     ResourcesUtils.broadcastResult(-1, dbFindVideo.getPosition(), mBroadcaster);
                     dbFindVideo.close();
 

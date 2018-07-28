@@ -95,7 +95,7 @@ public class VideoObject {
         if (metadata != null) {
             String commentStr = "comment=";
             //substring from the end of 'comment=' till the last ;; after 'comment='
-            if (metadata.toLowerCase().indexOf(commentStr.toLowerCase()) != -1) {
+            if (metadata.toLowerCase().contains(commentStr.toLowerCase())) {
                 String commentSection = metadata.substring(
                         metadata.toLowerCase().indexOf(commentStr.toLowerCase()) + commentStr.length(),
                         metadata.toLowerCase().lastIndexOf(

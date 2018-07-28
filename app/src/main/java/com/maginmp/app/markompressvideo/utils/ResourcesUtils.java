@@ -62,7 +62,7 @@ public class ResourcesUtils {
      * @param res id to find
      * @return the requested parent or one level up or null
      */
-    public static ViewParent findParentById(ViewParent vp, int res) {
+    private static ViewParent findParentById(ViewParent vp, int res) {
         if (vp == null)
             return null;
         if (((View) vp).getId() == res)
@@ -103,14 +103,14 @@ public class ResourcesUtils {
         intent = context.registerReceiver(null, ifilter);
         //}
 
-        int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-        isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL;
-
         int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
         batteryLvl = level / (float) scale;
+
+        int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
 
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         if (isServiceEnabledFromSettings && isCharging && batteryLvl > MainActivity.MINIMAL_BATTERY_LEVEL) {

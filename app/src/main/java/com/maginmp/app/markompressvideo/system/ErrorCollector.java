@@ -22,7 +22,7 @@ package com.maginmp.app.markompressvideo.system;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -101,7 +101,7 @@ public class ErrorCollector {
     public void showNotification() {
         if (mNotificationId > 0 && !mErrorList.isEmpty()) {
             NotificationCompat.Builder mBuilder =
-                    (android.support.v7.app.NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
+                    new NotificationCompat.Builder(mContext, "M_CH_ID")
                             .setSmallIcon(R.mipmap.icon_mkv)
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText(mContext.getString(R.string.notification_error_send_to_dev) + " " + TextUtils.join(";\t", mErrorList)))

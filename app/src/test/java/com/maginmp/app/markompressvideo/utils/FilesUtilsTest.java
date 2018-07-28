@@ -37,14 +37,16 @@ import static org.junit.Assert.*;
  */
 public class FilesUtilsTest {
 
-    public static final String MKV_TEST_CONTENT = "mkv_test_content";
+    private static final String MKV_TEST_CONTENT = "mkv_test_content";
 
     @Test
     public void listAllDirectories() throws Exception {
         CharSequence[] result = FilesUtils.listAllDirectories(new File(MKV_TEST_CONTENT + "/folders"));
-        Arrays.sort(result);
         CharSequence[] expected  = {"Camera", "Foo", "Screenshots"};
         Arrays.sort(expected);
+        if (result == null)
+            assertNotNull(result);
+        Arrays.sort(result);
         CharSequence[] expectedMac  = {".DS_Store", "Camera", "Foo", "Screenshots"};
         Arrays.sort(expectedMac);
         if (expected.length == result.length)

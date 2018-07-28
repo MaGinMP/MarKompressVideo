@@ -174,15 +174,13 @@ public class StringUtils {
      *
      * @param arr     The array to remove the element from
      * @param element The element to remove
-     * @param <T>     Any object sub type
      * @return The new array without the element
      */
-    public static <T> T[] removeElementFromArray(T[] arr, T element) {
+    public static CharSequence[] removeElementFromArray(CharSequence[] arr, CharSequence element) {
         if (arr == null)
             return null;
-        List<T> arrList = new LinkedList<>(Arrays.asList(arr));
+        List<CharSequence> arrList = new LinkedList<>(Arrays.asList(arr));
         arrList.remove(element);
-        return (T[]) arrList.toArray(new CharSequence[arrList.size()]);
-        //todo Avoid this cast, otherwise will crash on non charseq!
+        return arrList.toArray(new CharSequence[arrList.size()]);
     }
 }

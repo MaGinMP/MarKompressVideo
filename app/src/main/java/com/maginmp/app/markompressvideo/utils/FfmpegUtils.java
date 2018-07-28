@@ -24,7 +24,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
@@ -61,7 +61,7 @@ public class FfmpegUtils {
 
         int id = MainActivity.NOTIFICATION_ID_ERROR_FFUNSUPPORTED;
         NotificationCompat.Builder mBuilder =
-                (android.support.v7.app.NotificationCompat.Builder) new NotificationCompat.Builder(context)
+                new NotificationCompat.Builder(context, "M_CH_ID")
                         .setSmallIcon(R.mipmap.icon_mkv)
                         .setContentTitle(context.getString(R.string.dialog_device_not_supported_title))
                         .setContentText(context.getString(R.string.dialog_device_not_supported_message));

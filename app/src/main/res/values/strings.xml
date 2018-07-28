@@ -61,13 +61,13 @@
     <string name="videos_card_moreinfo_duration">Duration</string>
     <string name="videos_card_moreinfo_addedqueue">Added to queue</string>
     <string name="videos_card_moreinfo_proccesed">Converted on</string>
-    <string name="videos_card_moreinfo_enctime">Convertion took</string>
+    <string name="videos_card_moreinfo_enctime">Conversion took</string>
     <string name="videos_card_moreinfo_tarvd">Converted video</string>
     <string name="keysetting_is_device_state_encoding_ready">is_device_ready_for_enc</string>
     <string name="notification_fg_service_on_title">Converting</string>
     <string name="notification_fg_service_on_message">Your videos are being converted in the background</string>
     <string name="notification_fg_service_on_message_clips_status">%1$d of %2$d: %3$s</string>
-    <string name="notification_fg_service_on_message_cancelling">Canceling...</string>
+    <string name="notification_fg_service_on_message_cancelling">Canceling…</string>
     <string name="dialog_revert_title">Revert to original file</string>
     <string name="dialog_revert_msg">Are you sure you want to replace the converted video with the original?</string>
     <string name="dialog_revert_notexist_title">Revert failed</string>
