@@ -43,73 +43,68 @@ import java.util.List;
  */
 
 public class ErrorCollector {
-    private static final ErrorCollector mInstance = new ErrorCollector();
+    private static final ErrorCollector INSTANCE = new ErrorCollector();
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final long LOG_FILE_MAX_SIZE = 10000000;
     private String mLogFilePath;
-    private Context mContext;
     private int mNotificationId = -1;
-    private List<String> mErrorList = new ArrayList<>();
+    private final List<String> mErrorList = new ArrayList<>();
     private ErrorCollector() {
     }
 
     public static ErrorCollector getErrorCollectorIstance() {
-        return mInstance;
-    }
-
-
-    public void setContext(Context context) {
-        mContext = context;
+        return INSTANCE;
     }
 
     public void setNotificationId(int id) {
         mNotificationId = id;
     }
 
-    public void addError(String error) {
-        addErrorIfNotExist(error);
+    public void addError(String error, Context context) {
+        addErrorIfNotExist(error, context);
     }
 
-    private void addErrorIfNotExist(String error) {
+    private void addErrorIfNotExist(String error, Context context) {
         if (!mErrorList.contains(error))
             mErrorList.add(error);
         appendToLogFile(error);
-        showNotification();
+        if (context != null)
+            showNotification(context);
     }
 
-    public void removeAllErrors() {
+    public void removeAllErrors(Context context) {
         mErrorList.clear();
-        hideNotification();
+        hideNotification(context);
     }
 
-    public void removeError(String error) {
+    public void removeError(String error, Context context) {
         mErrorList.remove(error);
         if (mErrorList.isEmpty())
-            hideNotification();
+            hideNotification(context);
     }
 
     public boolean isErrorInList(String error) {
         return mErrorList.contains(error);
     }
 
-    public void hideNotification() {
+    public void hideNotification(Context context) {
         NotificationManager mNotificationManager =
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(mNotificationId);
     }
 
-    public void showNotification() {
+    public void showNotification(Context context) {
         if (mNotificationId > 0 && !mErrorList.isEmpty()) {
             NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(mContext, "M_CH_ID")
+                    new NotificationCompat.Builder(context, "M_CH_ID")
                             .setSmallIcon(R.mipmap.icon_mkv)
                             .setStyle(new NotificationCompat.BigTextStyle()
-                                    .bigText(mContext.getString(R.string.notification_error_send_to_dev) + " " + TextUtils.join(";\t", mErrorList)))
-                            .setContentTitle(StringUtils.getApplicationName(mContext) + " | " + mContext.getString(R.string.notification_error_title))
-                            .setContentText(mContext.getString(R.string.notification_error_send_to_dev));
+                                    .bigText(context.getString(R.string.notification_error_send_to_dev) + " " + TextUtils.join(";\t", mErrorList)))
+                            .setContentTitle(StringUtils.getApplicationName(context) + " | " + context.getString(R.string.notification_error_title))
+                            .setContentText(context.getString(R.string.notification_error_send_to_dev));
 
             NotificationManager mNotificationManager =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(mNotificationId, mBuilder.build());
         }
     }

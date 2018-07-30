@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
     private Fragment mSettingsFragment;
     private Fragment mInfoFragment;
 
-    private BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             int queueCount = intent.getIntExtra(VideosManagementService.BROADCAST_MESSAGE_QUEUE_COUNT, 0);
@@ -171,13 +171,13 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
         mWelcomeScreen = new WelcomeHelper(this, WelcomeScreenActivity.class);
         mWelcomeScreen.show(savedInstanceState);
 
-        mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        mBottomBar = findViewById(R.id.bottomBar);
         mBottomBar.setDefaultTab(R.id.tab_settings);
         mTabVideos = mBottomBar.getTabWithId(R.id.tab_videos);
         mTabSettings = mBottomBar.getTabWithId(R.id.tab_settings);
         mTabInfo = mBottomBar.getTabWithId(R.id.tab_info);
 
-        mTitleBar = (TextView) findViewById(R.id.appTitleBar);
+        mTitleBar = findViewById(R.id.appTitleBar);
 
 
         mVideosFragment = new VideoFragment();

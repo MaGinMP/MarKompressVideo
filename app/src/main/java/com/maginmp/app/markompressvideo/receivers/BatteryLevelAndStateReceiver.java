@@ -20,6 +20,7 @@
 
 package com.maginmp.app.markompressvideo.receivers;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import com.maginmp.app.markompressvideo.utils.ResourcesUtils;
  */
 
 public class BatteryLevelAndStateReceiver extends BroadcastReceiver {
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
         ResourcesUtils.deviceEncoderStateUpdater(PreferenceManager.getDefaultSharedPreferences(context), intent, context);

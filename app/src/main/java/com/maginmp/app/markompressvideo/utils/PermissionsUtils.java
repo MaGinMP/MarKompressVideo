@@ -113,7 +113,7 @@ public class PermissionsUtils {
                 if (grantResults[i] == PackageManager.PERMISSION_DENIED)
                     fullyApproved = false;
 
-        if (fullyApproved == true) {
+        if (fullyApproved) {
             Log.i(TAG, "PermissionsUtils are good");
         } else {
             Toast.makeText(activity, R.string.toast_permissions_not_accepted, Toast.LENGTH_LONG).show();

@@ -20,6 +20,7 @@
 
 package com.maginmp.app.markompressvideo.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -158,6 +159,7 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
      *
      * @param context
      */
+    @SuppressLint("SdCardPath")
     private static void test__dumpDB(Context context) {
         File f = context.getDatabasePath("videos.db");
         File[] ff = f.getParentFile().listFiles();
@@ -181,6 +183,7 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
             Toast.makeText(context, "DB dump ERROR", Toast.LENGTH_LONG).show();
         } finally {
+            //noinspection EmptyCatchBlock
             try {
                 fos.close();
                 fis.close();

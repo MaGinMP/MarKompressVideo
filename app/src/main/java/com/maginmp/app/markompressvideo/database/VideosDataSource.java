@@ -40,10 +40,11 @@ public class VideosDataSource {
     private static final String TAG = VideosDataSource.class.getSimpleName();
     private SQLiteDatabase mDatabase;
     private VideosDatabaseHelper mDbHelper;
+    private Context mContext;
 
     public VideosDataSource(Context context) {
         mDbHelper = new VideosDatabaseHelper(context);
-
+        mContext = context;
     }
 
     public void open() throws SQLException {
@@ -61,12 +62,12 @@ public class VideosDataSource {
      */
     public void addVideo(VideoObject video) {
         ContentValues values = video.toContentValues();
-        long insertId = mDatabase.insert(mDbHelper.TABLE_NAME, null, values);
+        long insertId = mDatabase.insert(VideosDatabaseHelper.TABLE_NAME, null, values);
 
         if (insertId < 1) {
             String err = TAG + " Add video to DB failed: " + video.getmFile().getName();
             Log.e(TAG, err);
-            Startup.ERROR_COLLECTOR.addError(err);
+            Startup.ERROR_COLLECTOR.addError(err, mContext);
         }
 
     }
@@ -78,11 +79,11 @@ public class VideosDataSource {
      */
     public void removeVideo(VideoObject video) {
         long id = video.getmId();
-        long deletedCount = mDatabase.delete(mDbHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " = " + id, null);
+        long deletedCount = mDatabase.delete(VideosDatabaseHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " = " + id, null);
         if (deletedCount <= 0) {
             String err = TAG + " Remove video from DB failed: " + video.getmFile().getName();
             Log.e(TAG, err);
-            Startup.ERROR_COLLECTOR.addError(err);
+            Startup.ERROR_COLLECTOR.addError(err, mContext);
         }
     }
 
@@ -92,11 +93,11 @@ public class VideosDataSource {
      * @param ids video object ids array
      */
     public void removeVideoByIds(Long[] ids) {
-        long deletedCount = mDatabase.delete(mDbHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " = ?", Arrays.toString(ids).split("[\\[\\]]")[1].split(", "));
+        long deletedCount = mDatabase.delete(VideosDatabaseHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " = ?", Arrays.toString(ids).split("[\\[\\]]")[1].split(", "));
         if (deletedCount != ids.length) {
             String err = TAG + " Remove video by ids from DB failed, ids.len=" + ids.length;
             Log.e(TAG, err);
-            Startup.ERROR_COLLECTOR.addError(err);
+            Startup.ERROR_COLLECTOR.addError(err, mContext);
         }
     }
 
@@ -141,7 +142,7 @@ public class VideosDataSource {
         ContentValues values = new ContentValues();
         values.put(VideosDatabaseHelper.COL_VIDEO_STATUS, status);
 
-        mDatabase.update(mDbHelper.TABLE_NAME, values, VideosDatabaseHelper.COL_ID + " = " + id, null);
+        mDatabase.update(VideosDatabaseHelper.TABLE_NAME, values, VideosDatabaseHelper.COL_ID + " = " + id, null);
     }
 
     /**
@@ -151,7 +152,7 @@ public class VideosDataSource {
      * @param videosDataSource not sure if needed...
      */
     public void updateRow(VideoObject video, VideosDataSource videosDataSource) {
-        mDatabase.update(mDbHelper.TABLE_NAME, video.toContentValues(), VideosDatabaseHelper.COL_ID + " = " + video.getmId(), null);
+        mDatabase.update(VideosDatabaseHelper.TABLE_NAME, video.toContentValues(), VideosDatabaseHelper.COL_ID + " = " + video.getmId(), null);
     }
 
 
@@ -165,7 +166,7 @@ public class VideosDataSource {
         ContentValues values = new ContentValues();
         values.put(VideosDatabaseHelper.COL_IS_REVERTABLE, b ? 1 : 0);
 
-        mDatabase.update(mDbHelper.TABLE_NAME, values, VideosDatabaseHelper.COL_ID + " = " + id, null);
+        mDatabase.update(VideosDatabaseHelper.TABLE_NAME, values, VideosDatabaseHelper.COL_ID + " = " + id, null);
     }
 
     /**

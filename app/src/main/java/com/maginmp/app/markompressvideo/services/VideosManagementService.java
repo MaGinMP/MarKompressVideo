@@ -111,7 +111,7 @@ public class VideosManagementService extends Service {
 
     public FFmpeg FFMPEG;
     public SharedPreferences mSharedPreferences;
-    public OnSharedPreferenceChangeListener mPrefListener = new OnSharedPreferenceChangeListener() {
+    public final OnSharedPreferenceChangeListener mPrefListener = new OnSharedPreferenceChangeListener() {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -150,8 +150,8 @@ public class VideosManagementService extends Service {
         }
     };
     private int mStartId;
-    private FfmpegReadMetadataResponseHandler mFfMetaResHandler = new FfmpegReadMetadataResponseHandler();
-    private FfmpegEncResponseHandler mFfEncodeHandler = new FfmpegEncResponseHandler();
+    private final FfmpegReadMetadataResponseHandler mFfMetaResHandler = new FfmpegReadMetadataResponseHandler();
+    private final FfmpegEncResponseHandler mFfEncodeHandler = new FfmpegEncResponseHandler();
     private LocalBroadcastManager mBroadcaster;
 
     @Override
@@ -249,7 +249,7 @@ public class VideosManagementService extends Service {
     }
 
     private static class VideoManagementAsyncTask extends AsyncTask<Integer, StatusUpdater, ResultUpdater> {
-        private WeakReference<VideosManagementService> mServiceReference;
+        private final WeakReference<VideosManagementService> mServiceReference;
         private int mOperation;
 
         VideoManagementAsyncTask(VideosManagementService context)
@@ -283,6 +283,7 @@ public class VideosManagementService extends Service {
         protected void onProgressUpdate(StatusUpdater... progress) {
             VideosManagementService serviceWeakRef = mServiceReference.get();
             if (serviceWeakRef == null || !IS_SERVICE_RUNNING) return;
+            Startup.ERROR_COLLECTOR.showNotification(serviceWeakRef.getApplicationContext());
             StatusUpdater progress0 = progress[0];
             String status = String.format(serviceWeakRef.getString(R.string.notification_fg_service_on_message_clips_status), progress0.idx, progress0.totalOf, progress0.video.getmFile().getName());
             NotificationCompat.Builder notification = serviceWeakRef.setFgNotification(status);
@@ -302,6 +303,7 @@ public class VideosManagementService extends Service {
             if (mNotificationManager != null) {
                 mNotificationManager.cancel(MainActivity.NOTIFICATION_ID_FG_SERVICE);
             }
+            Startup.ERROR_COLLECTOR.showNotification(serviceWeakRef.getApplicationContext());
         }
 
         private void refreshDb() {
@@ -353,7 +355,7 @@ public class VideosManagementService extends Service {
                         metadata = "";
                         String err = TAG + " Cannot load metadata: " + physicalFile.getName();
                         Log.e(TAG, err);
-                        Startup.ERROR_COLLECTOR.addError(err);
+                        Startup.ERROR_COLLECTOR.addError(err, null);
                     }
 
                     try {
@@ -368,7 +370,7 @@ public class VideosManagementService extends Service {
                 } else {
                     String err = TAG + " Duplicates are not possible";
                     Log.e(TAG, err);
-                    Startup.ERROR_COLLECTOR.addError(err);
+                    Startup.ERROR_COLLECTOR.addError(err, null);
                 }
                 dbFindVideo.close();
             }
@@ -468,14 +470,14 @@ public class VideosManagementService extends Service {
                         encSuc = false;
                         String err = TAG + " File swap failed: " + video.getmFile().getName() + " <--> " + video.getmBackupFile().getName();
                         Log.e(TAG, err);
-                        Startup.ERROR_COLLECTOR.addError(err);
+                        Startup.ERROR_COLLECTOR.addError(err, null);
                     }
                     if (encSuc) {
                         // Check if swap is bit exact
                         if (!file1Md5.equals(MD5.calculateMD5(video.getmBackupFile())) || !file2Md5.equals(MD5.calculateMD5(video.getmFile()))) {
                             String err = TAG + " File swap not bit exact: " + video.getmFile().getName() + " <--> " + video.getmBackupFile().getName();
                             Log.e(TAG, err);
-                            Startup.ERROR_COLLECTOR.addError(err);
+                            Startup.ERROR_COLLECTOR.addError(err, null);
                             // TODO Future task: try to at least revert source.
                             // TODO MD5 of file1 is calculated in encode() think about better design --> no need, too deep (inside FileUtils.constructBackupFile)
                         }
@@ -484,7 +486,7 @@ public class VideosManagementService extends Service {
                             encSuc = false;
                             String err = TAG + " post encode update DB failed: " + video.getmFile().getName();
                             Log.e(TAG, err);
-                            Startup.ERROR_COLLECTOR.addError(err);
+                            Startup.ERROR_COLLECTOR.addError(err, null);
                         }
 
                         if (encSuc) {
@@ -546,7 +548,7 @@ public class VideosManagementService extends Service {
                     e.printStackTrace();
                     String err = TAG + " cannot get canonical path: " + video.getmFile().getAbsolutePath();
                     Log.e(TAG, err);
-                    Startup.ERROR_COLLECTOR.addError(err);
+                    Startup.ERROR_COLLECTOR.addError(err, null);
                     failed = true;
                 }
 
@@ -687,7 +689,7 @@ public class VideosManagementService extends Service {
         public void onFailure(String s) {
             String err = TAG + " FFMPEG get metadata failed: " + s;
             Log.e(TAG, err);
-            Startup.ERROR_COLLECTOR.addError(err);
+            Startup.ERROR_COLLECTOR.addError(err, VideosManagementService.this.getApplicationContext());
             IS_METADATA_FFMPEG_RUNNING = false;
         }
 
@@ -721,7 +723,7 @@ public class VideosManagementService extends Service {
         public void onFailure(String s) {
             String err = TAG + " FFMPEG encode failed: " + s;
             Log.e(TAG, err);
-            Startup.ERROR_COLLECTOR.addError(err);
+            Startup.ERROR_COLLECTOR.addError(err, VideosManagementService.this.getApplicationContext());
             IS_ENC_FFMPEG_RUNNING = false;
         }
 

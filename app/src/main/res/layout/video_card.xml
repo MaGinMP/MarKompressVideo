@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:theme="@style/Tab1Theme">
-
+            <!-- todo replace with android.support.constraint.ConstraintLayout-->
             <android.support.percent.PercentFrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="left|bottom"
+                            android:layout_gravity="start|bottom"
                             android:background="@android:drawable/screen_background_dark_transparent"
                             android:orientation="vertical">
 
@@ -61,7 +61,8 @@
                                 android:paddingTop="@dimen/card_primary_text_top_padding"
                                 android:paddingLeft="@dimen/card_primary_text_left_right_padding"
                                 android:textSize="@dimen/card_primary_text_size"
-                                android:textColor="@color/video_card_text_color"/>
+                                android:textColor="@color/video_card_text_color"
+                                android:paddingStart="@dimen/card_primary_text_left_right_padding" />
                             <TextView
                                 android:id="@+id/videoFileSubtext"
                                 android:layout_width="match_parent"
@@ -70,7 +71,8 @@
                                 android:paddingLeft="@dimen/card_sub_text_left_right_padding"
                                 android:paddingBottom="@dimen/card_sub_text_bottom_padding"
                                 android:textSize="@dimen/card_sub_text_size"
-                                android:textColor="@color/video_card_text_color"/>
+                                android:textColor="@color/video_card_text_color"
+                                android:paddingStart="@dimen/card_sub_text_left_right_padding" />
                         </LinearLayout>
                         <ImageView
                             android:id="@+id/videos_card_play_button"
@@ -112,7 +114,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center|right"
+                    android:gravity="center|end"
                     android:orientation="horizontal">
 
                     <android.support.v7.widget.AppCompatImageButton
@@ -133,7 +135,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center|left"
+                    android:gravity="center|start"
                     android:orientation="horizontal">
                     <android.support.v7.widget.SwitchCompat
                         android:id="@+id/videos_card_add_remove_queue_switch"

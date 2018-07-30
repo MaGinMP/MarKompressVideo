@@ -32,11 +32,10 @@ import java.io.File;
 
 public class Startup extends Application {
 
-    public static ErrorCollector ERROR_COLLECTOR = ErrorCollector.getErrorCollectorIstance();
+    public static final ErrorCollector ERROR_COLLECTOR = ErrorCollector.getErrorCollectorIstance();
 
     @Override
     public void onCreate() {
-        ERROR_COLLECTOR.setContext(this);
         ERROR_COLLECTOR.setNotificationId(MainActivity.NOTIFICATION_ID_ERROR_COLLECTOR);
         ERROR_COLLECTOR.setLogFile((new File(MainActivity.MKV_DIRECTORY, "log.txt")).getAbsolutePath());
         super.onCreate();

@@ -69,6 +69,7 @@ import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by MarkGintsburg on 11/11/2016.
@@ -86,7 +87,7 @@ public class VideoFragment extends Fragment {
     private Cursor mDisplayedVideosCursor;
     private VideosDataSource mVidDataSrc;
     private VideoCardsAdapter mDisplayedVideosAdapter;
-    public SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    public final SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             Log.v(TAG, key + " Preference was changed");
@@ -103,7 +104,7 @@ public class VideoFragment extends Fragment {
     };
     private LocalBroadcastManager mBroadcaster;
 
-    private BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             int cursorInvalidatePos = intent.getIntExtra(VideosManagementService.BROADCAST_MESSAGE_CURSOR_POS, 0);
@@ -141,7 +142,7 @@ public class VideoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_video, container, false);
         createCardList(view);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefresh);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
 
         return view;
     }
@@ -186,7 +187,7 @@ public class VideoFragment extends Fragment {
         mVidDataSrc = new VideosDataSource(getActivity());
         mVidDataSrc.open();
 
-        mVideoCardsRecyclerView = (RecyclerView) view.findViewById(R.id.videoRecyclerView);
+        mVideoCardsRecyclerView = view.findViewById(R.id.videoRecyclerView);
 
         //mVideoCardsRecyclerView.setHasFixedSize(true); // generally the info button changes each card size, so not applicable?
         refreshCardList();
@@ -243,7 +244,7 @@ public class VideoFragment extends Fragment {
     }
 
     public class VideoCardsAdapter extends RecyclerView.Adapter<VideoCardsViewHolder> {
-        SparseBooleanArray mIsExpanded = new SparseBooleanArray();
+        final SparseBooleanArray mIsExpanded = new SparseBooleanArray();
         private Cursor mList;
 
         public VideoCardsAdapter(Cursor cursor) {
@@ -270,7 +271,7 @@ public class VideoFragment extends Fragment {
             if (!mList.moveToPosition(position)) {
                 String err = TAG + " cannot move to cursor pos: " + position;
                 Log.e(TAG, err);
-                Startup.ERROR_COLLECTOR.addError(err);
+                Startup.ERROR_COLLECTOR.addError(err, getActivity());
             }
             VideoObject video = new VideoObject(mList);
             holder.setmCurrentItem(video);
@@ -300,7 +301,7 @@ public class VideoFragment extends Fragment {
             addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_duration), StringUtils.millisToMinAndSec(video.getmDurationMilisec()));
 
             if (isOrigInfoExist)
-                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_size), String.format("%.1f MB", (float) video.getmSourceFilesize() / 1048576));
+                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_size), String.format(Locale.US, "%.1f MB", (float) video.getmSourceFilesize() / 1048576));
 
             if (video.ismIsRevetable())
                 addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_file), video.getmBackupFile().getParent());
@@ -308,7 +309,7 @@ public class VideoFragment extends Fragment {
                 addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_file), video.getmFile().getParent());
 
             if (isOrigInfoExist)
-                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_addedqueue), (new SimpleDateFormat("d MMM yyyy")).format(video.getmAddedToQueueDate()));
+                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_addedqueue), (new SimpleDateFormat("d MMM yyyy", Locale.US)).format(video.getmAddedToQueueDate()));
 
             if ((video.getmStatus() & VideosDatabaseHelper.STATUS_DONE) == VideosDatabaseHelper.STATUS_DONE) {
                 addRow(moreInfo, tab, ""); //spacer row
@@ -317,12 +318,12 @@ public class VideoFragment extends Fragment {
 
                 addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_dimen), StringUtils.widthAndHeightToDimen(video.getmTargetWidth(), video.getmTargetHeight()));
 
-                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_size), String.format("%.1f MB", (float) video.getmTargetFilesize() / 1048576));
+                addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_size), String.format(Locale.US, "%.1f MB", (float) video.getmTargetFilesize() / 1048576));
 
                 addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_file), video.getmFile().getParent());
 
                 if (video.getmProcessedDate().after(video.getmAddedToQueueDate()))
-                    addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_proccesed), (new SimpleDateFormat("d MMM yyyy")).format(video.getmProcessedDate()));
+                    addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_proccesed), (new SimpleDateFormat("d MMM yyyy", Locale.US)).format(video.getmProcessedDate()));
 
                 if (video.getmProcessedDate().after(video.getmAddedToQueueDate()))
                     addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_enctime), StringUtils.millisToMinAndSec(video.getmEncodeTime()));
@@ -393,7 +394,7 @@ public class VideoFragment extends Fragment {
             tvRight.setLayoutParams(lpRight);
             tvRight.setText(right);
             tvRight.setPadding(padding, padding / 4, padding, padding / 4);
-            tvRight.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+            tvRight.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
             tvRight.setSingleLine(false);
             tvRight.setMaxEms(10); //do not know why it works this way...
             row.addView(tvRight);
@@ -425,16 +426,16 @@ public class VideoFragment extends Fragment {
         public VideoCardsViewHolder(View v) {
             super(v);
             this.setmCurrentView(v);
-            mTitleTextView = (TextView) v.findViewById(R.id.videoFileName);
-            mSubTitleTextView = (TextView) v.findViewById(R.id.videoFileSubtext);
-            mThumbnailImageView = (ImageView) v.findViewById(R.id.videoThumbnailView);
-            mBypassButton = (SwitchCompat) v.findViewById(R.id.videos_card_add_remove_queue_switch);
-            mRevertButton = (AppCompatImageButton) v.findViewById(R.id.videos_card_revert);
-            mMoreInfoButton = (AppCompatImageButton) v.findViewById(R.id.videos_card_info);
-            mPlayVideoButton = (ImageView) v.findViewById(R.id.videos_card_play_button);
-            mExpandableLayout = (ExpandableLayout) v.findViewById(R.id.videos_card_expandable_layout);
-            mMoreInfoTable = (TableLayout) v.findViewById(R.id.video_card_expandable_layout_table);
-            mCardView = (CardView) v.findViewById(R.id.card_view);
+            mTitleTextView = v.findViewById(R.id.videoFileName);
+            mSubTitleTextView = v.findViewById(R.id.videoFileSubtext);
+            mThumbnailImageView = v.findViewById(R.id.videoThumbnailView);
+            mBypassButton = v.findViewById(R.id.videos_card_add_remove_queue_switch);
+            mRevertButton = v.findViewById(R.id.videos_card_revert);
+            mMoreInfoButton = v.findViewById(R.id.videos_card_info);
+            mPlayVideoButton = v.findViewById(R.id.videos_card_play_button);
+            mExpandableLayout = v.findViewById(R.id.videos_card_expandable_layout);
+            mMoreInfoTable = v.findViewById(R.id.video_card_expandable_layout_table);
+            mCardView = v.findViewById(R.id.card_view);
 
 
             mPlayVideoButton.setOnClickListener(new View.OnClickListener() {

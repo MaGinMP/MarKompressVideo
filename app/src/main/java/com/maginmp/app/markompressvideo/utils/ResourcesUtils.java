@@ -89,6 +89,7 @@ public class ResourcesUtils {
      * @param intent             for now null (see comments inside)
      * @param context            context
      */
+    @SuppressWarnings("ParameterCanBeLocal")
     public static synchronized void deviceEncoderStateUpdater(SharedPreferences mSharedPreferences, @Nullable Intent intent, Context context) {
 
         boolean isServiceEnabledFromSettings = mSharedPreferences.getBoolean(context.getString(R.string.keysetting_enable_service), true);

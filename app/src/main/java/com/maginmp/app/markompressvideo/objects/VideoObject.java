@@ -67,7 +67,7 @@ public class VideoObject {
     private int mStatus; // According to STATUS_* from VideoDatabaseHelper
 
     // Keys that will be embed in mp4 comment
-    private static String[] KEYS_TO_CONVERT = {VideosDatabaseHelper.COL_VIDEO_BU_PATH, VideosDatabaseHelper.COL_ORIG_VIDEO_DIMEN,
+    private static final String[] KEYS_TO_CONVERT = {VideosDatabaseHelper.COL_VIDEO_BU_PATH, VideosDatabaseHelper.COL_ORIG_VIDEO_DIMEN,
             VideosDatabaseHelper.COL_ORIG_FILE_SIZE, VideosDatabaseHelper.COL_ENCODE_TIME,
             VideosDatabaseHelper.COL_FFMPEG_CMD, VideosDatabaseHelper.COL_APP_VERSION,
             VideosDatabaseHelper.COL_PROC_DATE};

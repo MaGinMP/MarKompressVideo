@@ -4,7 +4,7 @@ An Android app that is designed to automatically and visually lossless re-encode
 
 ## Getting Started
 
-You can get the release APK from [Google Play Store](Placeholder) or from [Releases](https://github.com/MaGinMP/MarKompressVideo/releases) on Github.
+You can get the release APK from [Google Play Store](https://play.google.com/store/apps/details?id=com.maginmp.app.markompressvideo) or from [Releases](https://github.com/MaGinMP/MarKompressVideo/releases) on Github.
 
 The entire source code to build the app, including resources and tests, is available in this repository. No prerequisites needed.
 
