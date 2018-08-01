@@ -25,7 +25,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.maginmp.app.markompressvideo.services.VideosManagementService;
 import com.maginmp.app.markompressvideo.utils.ResourcesUtils;
 
 /**
@@ -36,6 +38,13 @@ public class BatteryLevelAndStateReceiver extends BroadcastReceiver {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
+        Toast.makeText(context, "BatteryLevelAndStateReceiver", Toast.LENGTH_LONG).show();
+
+        //todo maybe remove, since in Android O being registered explicitly
+        Intent serviceIntent = new Intent(context, VideosManagementService.class);
+        context.startService(serviceIntent);
+
+
         ResourcesUtils.deviceEncoderStateUpdater(PreferenceManager.getDefaultSharedPreferences(context), intent, context);
     }
 }

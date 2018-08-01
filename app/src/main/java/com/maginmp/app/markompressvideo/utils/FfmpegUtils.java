@@ -61,7 +61,7 @@ public class FfmpegUtils {
 
         int id = MainActivity.NOTIFICATION_ID_ERROR_FFUNSUPPORTED;
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context, "M_CH_ID")
+                new NotificationCompat.Builder(context, MainActivity.NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.mipmap.icon_mkv)
                         .setContentTitle(context.getString(R.string.dialog_device_not_supported_title))
                         .setContentText(context.getString(R.string.dialog_device_not_supported_message));

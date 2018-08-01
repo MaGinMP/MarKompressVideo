@@ -97,7 +97,7 @@ public class VideoFragment extends Fragment {
                     boolean isRefreshing = mSharedPreferences.getBoolean(key, false);
                     if (!isRefreshing)
                         onRefreshComplete();
-                    mSwipeRefreshLayout.setRefreshing(isRefreshing && VideosManagementService.IS_SERVICE_RUNNING);
+                    mSwipeRefreshLayout.setRefreshing(isRefreshing);
                 }
             }
         }
@@ -169,18 +169,15 @@ public class VideoFragment extends Fragment {
             }
         });
 
-        mSwipeRefreshLayout.setRefreshing(mSharedPreferences.getBoolean(getString(R.string.keysetting_videos_is_refreshing), false) && VideosManagementService.IS_SERVICE_RUNNING);
+        mSwipeRefreshLayout.setRefreshing(mSharedPreferences.getBoolean(getString(R.string.keysetting_videos_is_refreshing), false));
     }
 
 
     private void initiateRefresh() {
         Log.v(TAG, "initiateRefresh");
-        if (VideosManagementService.IS_SERVICE_RUNNING) {
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), true);
-            editor.commit();
-        } else
-            Toast.makeText(getActivity(), R.string.videos_man_service_off, Toast.LENGTH_LONG).show();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), true);
+        editor.commit();
     }
 
     private void createCardList(View view) {

@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.maginmp.app.markompressvideo.services.VideosManagementService;
 
@@ -35,9 +36,8 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!VideosManagementService.IS_SERVICE_RUNNING) {
-            Intent serviceIntent = new Intent(context, VideosManagementService.class);
-            context.startService(serviceIntent);
-        }
+        Toast.makeText(context, "BootCompletedReceiver", Toast.LENGTH_LONG).show();
+        Intent serviceIntent = new Intent(context, VideosManagementService.class);
+        context.startService(serviceIntent);
     }
 }

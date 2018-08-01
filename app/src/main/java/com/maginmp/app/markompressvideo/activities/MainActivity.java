@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
     public static final int NOTIFICATION_ID_ERROR_COLLECTOR = 3;
     public static final int NOTIFICATION_ID_ERROR_FFUNSUPPORTED = 2;
     public static final int NOTIFICATION_ID_FG_SERVICE = 1;
+    public static final String NOTIFICATION_CHANNEL_ID = "com.maginmp.app.markompressvideo.services.notifications";
     public static final float MINIMAL_BATTERY_LEVEL = 0.95f; // 95%
     public static final int MINIMAL_SUGGESTED_STORAGE_MB = 1024; // 1GB
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -192,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
     private void initService() {
         if (!mSharedPreferences.getBoolean(getString(R.string.keysetting_is_ffmpeg_supported), true)) {
             FfmpegUtils.showFfmpegUnsupportedDialog(this);
-        } else if (!VideosManagementService.IS_SERVICE_RUNNING) {
+        } else {
             Intent intent = new Intent(this, VideosManagementService.class);
             startService(intent);
         }

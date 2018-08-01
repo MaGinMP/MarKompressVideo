@@ -96,7 +96,7 @@ public class ErrorCollector {
     public void showNotification(Context context) {
         if (mNotificationId > 0 && !mErrorList.isEmpty()) {
             NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(context, "M_CH_ID")
+                    new NotificationCompat.Builder(context, MainActivity.NOTIFICATION_CHANNEL_ID)
                             .setSmallIcon(R.mipmap.icon_mkv)
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText(context.getString(R.string.notification_error_send_to_dev) + " " + TextUtils.join(";\t", mErrorList)))

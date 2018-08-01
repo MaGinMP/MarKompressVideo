@@ -86,5 +86,6 @@
     <string name="welcome_screen_6_body">Your device shoots awesome 4K but mediocre FHD? MarKompress Video can downscale your 4K videos to FHD with high quality scalers!</string>
     <string name="welcome_screen_7_title">Free and open source</string>
     <string name="welcome_screen_7_body">MarKompress Video is an open source app.\n\nFor additional information: MaGinMP@gmail.com</string>
+    <string name="notifications_channel_name">Notifications</string>
 
 </resources>
