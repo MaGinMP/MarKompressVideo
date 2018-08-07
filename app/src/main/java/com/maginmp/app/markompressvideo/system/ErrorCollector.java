@@ -25,7 +25,9 @@ import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.maginmp.app.markompressvideo.BuildConfig;
 import com.maginmp.app.markompressvideo.R;
 import com.maginmp.app.markompressvideo.activities.MainActivity;
 import com.maginmp.app.markompressvideo.utils.StringUtils;
@@ -97,7 +99,7 @@ public class ErrorCollector {
         if (mNotificationId > 0 && !mErrorList.isEmpty()) {
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context, MainActivity.NOTIFICATION_CHANNEL_ID)
-                            .setSmallIcon(R.mipmap.icon_mkv)
+                            .setSmallIcon(R.mipmap.ic_notification)
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText(context.getString(R.string.notification_error_send_to_dev) + " " + TextUtils.join(";\t", mErrorList)))
                             .setContentTitle(StringUtils.getApplicationName(context) + " | " + context.getString(R.string.notification_error_title))
@@ -137,6 +139,12 @@ public class ErrorCollector {
                     }
             }
         }
+    }
+
+    public static void debugToast(String msg, Context context)
+    {
+        if (BuildConfig.DEBUG)
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
 }

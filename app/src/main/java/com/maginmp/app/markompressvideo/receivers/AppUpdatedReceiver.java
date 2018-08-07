@@ -1,8 +1,8 @@
 /*
- * BatteryLevelAndStateReceiver.java
+ * AppUpdatedReceiver.java
  *
  * MarKompressVideo
- * Copyright (c) 2017. Mark Gintsburg
+ * Copyright (c) 2018. Mark Gintsburg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,18 @@
 
 package com.maginmp.app.markompressvideo.receivers;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.maginmp.app.markompressvideo.system.ErrorCollector;
+import com.maginmp.app.markompressvideo.services.VideosManagementService;
 
-/**
- * Created by MarkGintsburg on 04/06/2017.
- */
+//Intended for scheduling a job after app update (won't happen automatically)
+public class AppUpdatedReceiver extends BroadcastReceiver{
 
-public class BatteryLevelAndStateReceiver extends BroadcastReceiver {
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
-        ErrorCollector.debugToast("BatteryLevelAndStateReceiver", context);
+        if (context!=null)
+            VideosManagementService.schedule(context);
     }
 }

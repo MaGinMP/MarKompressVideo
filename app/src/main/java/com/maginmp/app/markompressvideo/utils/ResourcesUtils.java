@@ -20,12 +20,14 @@
 
 package com.maginmp.app.markompressvideo.utils;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.view.ViewParent;
@@ -141,26 +143,27 @@ public class ResourcesUtils {
         broadcaster.sendBroadcast(intent);
     }
 
-
     public static long hoursToMilis(float hours) {
         return round(hours * 60 * 60 * 1000);
     }
 
-
-    /* Not needed: For now checking using a static variable is enough
-    public static boolean isVideosManagementServiceRunning(Activity activity)
+    public static void cancelNotification(Context context, int id)
     {
-        return VideosManagementService.IS_SERVICE_RUNNING && PermissionsUtils.IsServiceRunning(activity, VideosManagementService.class);
+        if (context == null)
+            return;
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null)
+            notificationManager.cancel(id);
     }
 
-    private boolean IsServiceRunning(Class<?> serviceClass, Activity activity) {
-        ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+    public static void showNotification(Context context, int id, NotificationCompat.Builder notification)
+    {
+        if (context == null)
+            return;
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null)
+            notificationManager.notify(id, notification.build());
     }
-    */
 }

@@ -25,13 +25,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.maginmp.app.markompressvideo.R;
 import com.maginmp.app.markompressvideo.activities.MainActivity;
-import com.maginmp.app.markompressvideo.services.VideosManagementService;
 
 /**
  * Created by MarkGintsburg on 16/06/2017.
@@ -62,52 +59,20 @@ public class FfmpegUtils {
         int id = MainActivity.NOTIFICATION_ID_ERROR_FFUNSUPPORTED;
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context, MainActivity.NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.icon_mkv)
+                        .setSmallIcon(R.mipmap.ic_notification)
                         .setContentTitle(context.getString(R.string.dialog_device_not_supported_title))
                         .setContentText(context.getString(R.string.dialog_device_not_supported_message));
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(id, mBuilder.build());
-
-    }
-
-    /**
-     * Executes FFMPEG safely by also checking constants. Needed instead the case that FFMPEG is waiting for input
-     * then isFFmpegCommandRunning will return true. Using this method will continue to run FFMPEG until onsucess
-     * or onfailure or timeout exceeded
-     *
-     * @param ffmpeg
-     * @param metadataCmdArr
-     * @param timeout
-     * @param waitIntervals
-     * @param mFfMetaResHandler
-     * @return
-     */
-    public static boolean executeFfmpegSafely(FFmpeg ffmpeg, String[] metadataCmdArr, long timeout, long waitIntervals, ExecuteBinaryResponseHandler mFfMetaResHandler) {
-        ffmpeg.setTimeout(timeout);
-        while (ffmpeg.isFFmpegCommandRunning() || VideosManagementService.IS_METADATA_FFMPEG_RUNNING || VideosManagementService.IS_ENC_FFMPEG_RUNNING) {
-            try {
-                Thread.sleep(waitIntervals);
-            } catch (Exception e) {
-                return false;
-            }
-
-        }
         try {
-            ffmpeg.execute(metadataCmdArr, mFfMetaResHandler);
-        } catch (FFmpegCommandAlreadyRunningException e) {
+            NotificationManager mNotificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(id, mBuilder.build());
+        }
+        catch (Exception e)
+        {
+            Log.v(TAG, "FFMPEG unsupported!!");
             e.printStackTrace();
-            return false;
         }
-        while (ffmpeg.isFFmpegCommandRunning() || VideosManagementService.IS_METADATA_FFMPEG_RUNNING || VideosManagementService.IS_ENC_FFMPEG_RUNNING) {
-            try {
-                Thread.sleep(waitIntervals);
-            } catch (Exception e) {
-                return false;
-            }
 
-        }
-        return true;
     }
 }

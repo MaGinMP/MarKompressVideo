@@ -142,43 +142,6 @@ public class FilesUtils {
 
         return inputFile.renameTo(outputFile);
 
-        /* does not work correctly (SO ticket 4178168)
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-
-            //create output directory if it doesn't exist
-            File dir = new File (outputPath);
-            mkDirIfNotExist(dir);
-
-
-            in = new FileInputStream(inputPath);
-            out = new FileOutputStream(outputPath);
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            in.close();
-            in = null;
-
-            // write the output file (You have now copied the file)
-            out.flush();
-            out.close();
-            out = null;
-
-        }  catch (FileNotFoundException fnfe1) {
-            Log.e(TAG, fnfe1.getMessage());
-            return false;
-        }
-        catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            return false;
-        }
-
-        return true;
-        */
     }
 
     /**
@@ -252,16 +215,4 @@ public class FilesUtils {
         String basename = file.getName().length() > lenThresh ? file.getName().substring(0, lenThresh) : file.getName();
         return new File(MainActivity.MKV_DIRECTORY, basename.replace('.', '_') + md5 + VideosManagementService.BACKUP_FILE_EXTENSION);
     }
-
-    /* file.getFreeSpace is accurate enough
-    public static float megabytesAvailable(File f) {
-        StatFs stat = new StatFs(f.getPath());
-        long bytesAvailable = 0;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
-            bytesAvailable = stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
-        else
-            bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
-        return bytesAvailable / (1024.f * 1024.f);
-    }
-    */
 }

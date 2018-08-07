@@ -52,7 +52,6 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.maginmp.app.markompressvideo.R;
 import com.maginmp.app.markompressvideo.database.VideosDataSource;
@@ -69,6 +68,7 @@ import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -87,6 +87,8 @@ public class VideoFragment extends Fragment {
     private Cursor mDisplayedVideosCursor;
     private VideosDataSource mVidDataSrc;
     private VideoCardsAdapter mDisplayedVideosAdapter;
+    private TextView mLastRefreshTextView;
+
     public final SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -98,6 +100,14 @@ public class VideoFragment extends Fragment {
                     if (!isRefreshing)
                         onRefreshComplete();
                     mSwipeRefreshLayout.setRefreshing(isRefreshing);
+                }
+                else if (key.equals(getString(R.string.keysetting_videos_is_refreshing_update)))
+                {
+                    refreshCardList();
+                }
+                else if (key.equals(getString(R.string.keysetting_last_refresh_on_date)))
+                {
+                    updateInfoTV();
                 }
             }
         }
@@ -143,6 +153,9 @@ public class VideoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_video, container, false);
         createCardList(view);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
+        mLastRefreshTextView = view.findViewById(R.id.tv_last_refreshed);
+
+        updateInfoTV();
 
         return view;
     }
@@ -174,10 +187,11 @@ public class VideoFragment extends Fragment {
 
 
     private void initiateRefresh() {
-        Log.v(TAG, "initiateRefresh");
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), true);
-        editor.commit();
+        Log.v(TAG, "initiateRefresh - do nothing");
+        mSwipeRefreshLayout.setRefreshing(mSharedPreferences.getBoolean(getString(R.string.keysetting_videos_is_refreshing), false));
+//        SharedPreferences.Editor editor = mSharedPreferences.edit();
+//        editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), true);
+//        editor.commit();
     }
 
     private void createCardList(View view) {
@@ -188,6 +202,18 @@ public class VideoFragment extends Fragment {
 
         //mVideoCardsRecyclerView.setHasFixedSize(true); // generally the info button changes each card size, so not applicable?
         refreshCardList();
+    }
+
+    protected void updateInfoTV()
+    {
+        int numOfVids = mSharedPreferences.getInt(getString(R.string.keysetting_last_refresh_on_num), 0);
+        long milis = mSharedPreferences.getLong(getString(R.string.keysetting_last_refresh_on_date), 0);
+        if (milis != 0) {
+            String date = (new SimpleDateFormat("d MMM ''yy 'at' HH:mm", Locale.US)).format(new Date(milis));
+            String lastUpdated = getString(R.string.videos_last_refresh_on, date, numOfVids);
+            if (mLastRefreshTextView != null)
+                mLastRefreshTextView.setText(lastUpdated);
+        }
     }
 
     private void refreshCardList() {
@@ -206,9 +232,8 @@ public class VideoFragment extends Fragment {
 
     private void onRefreshComplete() {
         Log.v(TAG, "onRefreshComplete");
-
-        //mDisplayedVideosAdapter.notifyDataSetChanged();
         refreshCardList();
+        //mDisplayedVideosAdapter.notifyDataSetChanged();
     }
 
     private void invalidateCardByCursorPos(int position) {

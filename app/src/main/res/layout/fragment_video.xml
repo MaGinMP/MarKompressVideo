@@ -8,13 +8,14 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/tv_last_refreshed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center|top"
             android:textSize="@dimen/videos_swipe_down_text_size"
             android:padding="@dimen/videos_swipe_down_padding"
             android:alpha="@dimen/icon_material_black_on_white_alpha_disabled"
-            android:text="@string/videos_swipe_down_to_refresh"/>
+            android:text="@string/videos_last_refresh_on_none"/>
 
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"

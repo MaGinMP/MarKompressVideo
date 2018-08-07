@@ -40,6 +40,8 @@ import java.util.List;
 
 public class VideosDatabaseHelper extends SQLiteOpenHelper {
 
+    private static VideosDatabaseHelper mInstance = null;
+
     public static final String TABLE_NAME = "videos_table";
     // Auto generated ID
     public static final String COL_ID = "_id";
@@ -94,6 +96,8 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
             COL_PROC_DATE, COL_ORIG_FILE_SIZE, COL_PROC_FILE_SIZE, COL_APP_VERSION,
             COL_VIDEO_DURATION, COL_ENCODE_TIME, COL_ORIG_VIDEO_DIMEN, COL_PROC_VIDEO_DIMEN,
             COL_VIDEO_STATUS);
+    public static  final List<String> COMPACT_COLS_LIST = Arrays.asList(
+            COL_ID, COL_VIDEO_PATH, COL_VIDEO_BU_PATH, COL_VIDEO_STATUS);
     private static final String TAG = VideosDatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "videos.db";
 
@@ -147,8 +151,15 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
                     ");", ALL_COLS_BY_ORDER.toArray()
             );
 
+    public static VideosDatabaseHelper getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new VideosDatabaseHelper(context.getApplicationContext());
+        }
+        return mInstance;
+    }
 
-    public VideosDatabaseHelper(Context context) {
+
+    private VideosDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
         //test__dumpDB(context);

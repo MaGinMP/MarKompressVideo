@@ -26,7 +26,11 @@
         </activity>
         <activity android:name=".activities.WelcomeScreenActivity"
             android:theme="@style/WelcomeScreenTheme"/>
-        <service android:name=".services.VideosManagementService" />
+        <service android:name=".services.VideosManagementService">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
         <receiver
             android:name=".receivers.BootCompletedReceiver"
             android:enabled="true"
@@ -46,6 +50,11 @@
                 <action android:name="android.intent.action.BATTERY_LOW"/>
                 <action android:name="android.intent.action.BATTERY_OKAY"/>
                 <action android:name="android.intent.action.BATTERY_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receivers.AppUpdatedReceiver" android:enabled="true" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
     </application>

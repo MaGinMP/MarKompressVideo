@@ -20,10 +20,6 @@
 
 package com.maginmp.app.markompressvideo.utils;
 
-import com.maginmp.app.markompressvideo.activities.MainActivity;
-import com.maginmp.app.markompressvideo.external.MD5;
-import com.maginmp.app.markompressvideo.objects.VideoObject;
-
 import org.junit.Test;
 
 import java.io.File;

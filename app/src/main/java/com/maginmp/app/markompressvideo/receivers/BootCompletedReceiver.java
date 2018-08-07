@@ -28,16 +28,13 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
 
-import com.maginmp.app.markompressvideo.services.VideosManagementService;
+import com.maginmp.app.markompressvideo.system.ErrorCollector;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "BootCompletedReceiver", Toast.LENGTH_LONG).show();
-        Intent serviceIntent = new Intent(context, VideosManagementService.class);
-        context.startService(serviceIntent);
+        ErrorCollector.debugToast("BootCompletedReceiver", context);
     }
 }

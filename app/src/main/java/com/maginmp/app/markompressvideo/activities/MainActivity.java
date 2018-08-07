@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
         PermissionsUtils.requestPermissions(this, APP_PERMISSIONS, APP_PERMISSIONS_REQUEST_CODE);
         setContentView(R.layout.activity_main);
 
+        VideosManagementService.schedule(this);
+
         initUi(savedInstanceState);
     }
 

@@ -31,6 +31,7 @@ import com.maginmp.app.markompressvideo.objects.VideoObject;
 import com.maginmp.app.markompressvideo.system.Startup;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by MarkGintsburg on 21/05/2017.
@@ -43,7 +44,7 @@ public class VideosDataSource {
     private Context mContext;
 
     public VideosDataSource(Context context) {
-        mDbHelper = new VideosDatabaseHelper(context);
+        mDbHelper = VideosDatabaseHelper.getInstance(context);
         mContext = context;
     }
 
@@ -52,7 +53,8 @@ public class VideosDataSource {
     }
 
     public void close() {
-        mDbHelper.close();
+        Log.v(TAG, "close() was called, but connection will not be killed");
+        //mDbHelper.close();
     }
 
     /**
@@ -121,9 +123,14 @@ public class VideosDataSource {
      * @return the corresponding cursor
      */
     public Cursor getAllVideos(boolean isGetOnlyPathCols, String rowsSelection, String DescAsc) {
-        String[] cols = VideosDatabaseHelper.ALL_COLS_BY_ORDER.toArray(new String[VideosDatabaseHelper.ALL_COLS_BY_ORDER.size()]);
+        String[] cols;
+        List<String> colsList;
         if (isGetOnlyPathCols)
-            cols = new String[]{VideosDatabaseHelper.COL_ID, VideosDatabaseHelper.COL_VIDEO_PATH, VideosDatabaseHelper.COL_VIDEO_BU_PATH};
+            colsList = VideosDatabaseHelper.COMPACT_COLS_LIST;
+        else
+            colsList = VideosDatabaseHelper.ALL_COLS_BY_ORDER;
+        cols = colsList.toArray(new String[colsList.size()]);
+
         Cursor videos = mDatabase.query(VideosDatabaseHelper.TABLE_NAME,
                 cols, rowsSelection, null, null, null, VideosDatabaseHelper.COL_ID + " " + DescAsc.toUpperCase());
 

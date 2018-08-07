@@ -64,7 +64,7 @@ public class InfoFragment extends Fragment {
                 .libLicense("ExpandableLayout", "Daniel Cachapa", L.AP2, "https://github.com/cachapa/ExpandableLayout")
                 .libLicense("Welcome", "Stephen Tuso", L.AP2, "https://github.com/stephentuso/welcome-android")
                 .libLicense("AboutIt", "Victor Häggqvist", L.AP2, "https://github.com/victorhaggqvist/aboutit")
-                .libLicense("FFmpeg Android Java", "WritingMinds", L.GPL3, "https://github.com/writingminds/ffmpeg-android")
+                .libLicense("FFmpeg-Android", "Bravobit", L.MIT, "https://github.com/bravobit/FFmpeg-Android")
                 .libLicense("BottomBar", "Iiro Krankka", L.AP2, "https://github.com/roughike/BottomBar")
                 .toTextView(R.id.info_txt_about);
     }

@@ -37,8 +37,12 @@
     <string name="keysetting_file_directories">setting_file_directories</string>
     <string name="settings_file_directories_dial_title">Search for videos in these folders</string>
     <string name="settings_file_directories_summary">Look for files to compress in these locations</string>
-    <string name="videos_swipe_down_to_refresh">Swipe down to refresh</string>
+    <string name="videos_last_refresh_on">Last refresh on: %1$s (%2$d videos)</string>
+    <string name="videos_last_refresh_on_none">This screen will be updated soon</string>
     <string name="keysetting_videos_is_refreshing">videos_is_refreshing</string>
+    <string name="keysetting_videos_is_refreshing_update">videos_is_refreshing_update</string>
+    <string name="keysetting_last_refresh_on_date">keysetting_last_refresh_on_date</string>
+    <string name="keysetting_last_refresh_on_num">keysetting_last_refresh_on_num</string>
     <string name="videos_man_service_off">ERROR: can\'t refresh, service is off</string>
     <string name="videos_card_remove_queue">Don\'t compress</string>
     <string name="videos_card_add_queue">Compress</string>
@@ -66,7 +70,7 @@
     <string name="keysetting_is_device_state_encoding_ready">is_device_ready_for_enc</string>
     <string name="notification_fg_service_on_title">Converting</string>
     <string name="notification_fg_service_on_message">Your videos are being converted in the background</string>
-    <string name="notification_fg_service_on_message_clips_status">%1$d of %2$d: %3$s</string>
+    <string name="notification_fg_service_on_message_clips_status">Encoding %1$s.\n%2$d videos left</string>
     <string name="notification_fg_service_on_message_cancelling">Canceling…</string>
     <string name="dialog_revert_title">Revert to original file</string>
     <string name="dialog_revert_msg">Are you sure you want to replace the converted video with the original?</string>

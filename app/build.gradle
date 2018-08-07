@@ -7,8 +7,8 @@ android {
         applicationId "com.maginmp.app.markompressvideo"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 5
-        versionName "0.4.1"
+        versionCode 6
+        versionName "0.6.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,6 +25,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:preference-v7:27.1.1'
     implementation "com.android.support:support-compat:27.1.1"
@@ -35,6 +36,6 @@ dependencies {
     implementation 'com.roughike:bottom-bar:2.3.1'
     implementation 'com.snilius.aboutit:aboutit:1.2.1@aar'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
-    implementation 'com.writingminds:FFmpegAndroid:0.3.2'
+    implementation 'nl.bravobit:android-ffmpeg:1.1.5'
     implementation 'com.stephentuso:welcome:1.4.1'
 }
