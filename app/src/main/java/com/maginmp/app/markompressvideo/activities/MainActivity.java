@@ -45,6 +45,7 @@ import com.maginmp.app.markompressvideo.fragments.InfoFragment;
 import com.maginmp.app.markompressvideo.fragments.SettingsFragment;
 import com.maginmp.app.markompressvideo.fragments.VideoFragment;
 import com.maginmp.app.markompressvideo.services.VideosManagementService;
+import com.maginmp.app.markompressvideo.system.ErrorCollector;
 import com.maginmp.app.markompressvideo.utils.FfmpegUtils;
 import com.maginmp.app.markompressvideo.utils.PermissionsUtils;
 import com.roughike.bottombar.BottomBar;
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
 
 
     public void forceShowSplash(View v) {
-        Log.v(TAG, "Showing splash");
+        ErrorCollector.debugLog(TAG, "Showing splash");
         mWelcomeScreen = new WelcomeHelper(this, WelcomeScreenActivity.class);
         mWelcomeScreen.forceShow();
     }

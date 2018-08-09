@@ -70,7 +70,7 @@ public class FfmpegUtils {
         }
         catch (Exception e)
         {
-            Log.v(TAG, "FFMPEG unsupported!!");
+            Log.e(TAG, "FFMPEG unsupported!!");
             e.printStackTrace();
         }
 

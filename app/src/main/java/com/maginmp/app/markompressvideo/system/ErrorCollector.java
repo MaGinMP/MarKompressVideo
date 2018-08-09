@@ -147,4 +147,10 @@ public class ErrorCollector {
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
+    public static void debugLog(String tag, String msg)
+    {
+        if (BuildConfig.DEBUG)
+            Log.v(tag, msg);
+    }
+
 }

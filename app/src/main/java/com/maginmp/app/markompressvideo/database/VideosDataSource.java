@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.maginmp.app.markompressvideo.objects.VideoObject;
+import com.maginmp.app.markompressvideo.system.ErrorCollector;
 import com.maginmp.app.markompressvideo.system.Startup;
 
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class VideosDataSource {
     }
 
     public void close() {
-        Log.v(TAG, "close() was called, but connection will not be killed");
+        ErrorCollector.debugLog(TAG, "close() was called, but connection will not be killed");
         //mDbHelper.close();
     }
 
@@ -135,7 +136,7 @@ public class VideosDataSource {
                 cols, rowsSelection, null, null, null, VideosDatabaseHelper.COL_ID + " " + DescAsc.toUpperCase());
 
         videos.moveToFirst();
-        Log.v(TAG, "Read " + videos.getCount() + " videos from database");
+        ErrorCollector.debugLog(TAG, "Read " + videos.getCount() + " videos from database");
         return videos;
     }
 

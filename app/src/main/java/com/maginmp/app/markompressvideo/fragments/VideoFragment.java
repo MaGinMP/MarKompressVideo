@@ -58,6 +58,7 @@ import com.maginmp.app.markompressvideo.database.VideosDataSource;
 import com.maginmp.app.markompressvideo.database.VideosDatabaseHelper;
 import com.maginmp.app.markompressvideo.objects.VideoObject;
 import com.maginmp.app.markompressvideo.services.VideosManagementService;
+import com.maginmp.app.markompressvideo.system.ErrorCollector;
 import com.maginmp.app.markompressvideo.system.Startup;
 import com.maginmp.app.markompressvideo.utils.FilesUtils;
 import com.maginmp.app.markompressvideo.utils.ResourcesUtils;
@@ -92,7 +93,7 @@ public class VideoFragment extends Fragment {
     public final SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Log.v(TAG, key + " Preference was changed");
+            ErrorCollector.debugLog(TAG, key + " Preference was changed");
             if (getActivity() != null) {
                 // Listen for refresh state change
                 if (key.equals(getString(R.string.keysetting_videos_is_refreshing))) {
@@ -177,7 +178,7 @@ public class VideoFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.v(TAG, "onRefresh called from SwipeRefreshLayout");
+                ErrorCollector.debugLog(TAG, "onRefresh called from SwipeRefreshLayout");
                 initiateRefresh();
             }
         });
@@ -187,11 +188,8 @@ public class VideoFragment extends Fragment {
 
 
     private void initiateRefresh() {
-        Log.v(TAG, "initiateRefresh - do nothing");
+        ErrorCollector.debugLog(TAG, "initiateRefresh - do nothing");
         mSwipeRefreshLayout.setRefreshing(mSharedPreferences.getBoolean(getString(R.string.keysetting_videos_is_refreshing), false));
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putBoolean(getString(R.string.keysetting_videos_is_refreshing), true);
-//        editor.commit();
     }
 
     private void createCardList(View view) {
@@ -231,7 +229,7 @@ public class VideoFragment extends Fragment {
     }
 
     private void onRefreshComplete() {
-        Log.v(TAG, "onRefreshComplete");
+        ErrorCollector.debugLog(TAG, "onRefreshComplete");
         refreshCardList();
         //mDisplayedVideosAdapter.notifyDataSetChanged();
     }
@@ -421,7 +419,7 @@ public class VideoFragment extends Fragment {
             tvRight.setMaxEms(10); //do not know why it works this way...
             row.addView(tvRight);
             table.addView(row);
-            Log.v(TAG, left + " : " + right);
+            ErrorCollector.debugLog(TAG, left + " : " + right);
         }
 
         @Override
@@ -463,7 +461,7 @@ public class VideoFragment extends Fragment {
             mPlayVideoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.v(TAG, "Play " + mCurrentItem.getmFile().getAbsolutePath());
+                    ErrorCollector.debugLog(TAG, "Play " + mCurrentItem.getmFile().getAbsolutePath());
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mCurrentItem.getmFile().getAbsolutePath()));
                     intent.setDataAndType(Uri.parse(mCurrentItem.getmFile().getAbsolutePath()), "video/*");
                     startActivity(intent);
@@ -509,9 +507,9 @@ public class VideoFragment extends Fragment {
             mRevertButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.v(TAG, mCurrentItem.getmFile().getAbsolutePath() + ": " + mCurrentItem.getmFile().exists());
-                    Log.v(TAG, mCurrentItem.getmBackupFile().getAbsolutePath() + ": " + mCurrentItem.getmBackupFile().exists());
-                    Log.v(TAG, "Revertable: " + mCurrentItem.ismIsRevetable());
+                    ErrorCollector.debugLog(TAG, mCurrentItem.getmFile().getAbsolutePath() + ": " + mCurrentItem.getmFile().exists());
+                    ErrorCollector.debugLog(TAG, mCurrentItem.getmBackupFile().getAbsolutePath() + ": " + mCurrentItem.getmBackupFile().exists());
+                    ErrorCollector.debugLog(TAG, "Revertable: " + mCurrentItem.ismIsRevetable());
 
                     // "Are you sure to revert?" dialog
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -519,7 +517,7 @@ public class VideoFragment extends Fragment {
                             .setMessage(R.string.dialog_revert_msg)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Log.v(TAG, "Revert ok for " + mCurrentItem.getmFile().getName());
+                                    ErrorCollector.debugLog(TAG, "Revert ok for " + mCurrentItem.getmFile().getName());
                                     if (mCurrentItem.getmBackupFile().exists()) {
                                         synchronized (ThreadsUtils.SYNC_FILE_OPERATION) {
                                             FilesUtils.swapFiles(mCurrentItem);
@@ -550,7 +548,7 @@ public class VideoFragment extends Fragment {
                             })
                             .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Log.v(TAG, "Revert cancel for " + mCurrentItem.getmFile().getName());
+                                    ErrorCollector.debugLog(TAG, "Revert cancel for " + mCurrentItem.getmFile().getName());
                                 }
                             });
                     builder.create().show();

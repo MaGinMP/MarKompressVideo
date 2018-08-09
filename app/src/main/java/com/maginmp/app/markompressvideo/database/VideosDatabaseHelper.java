@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.maginmp.app.markompressvideo.system.ErrorCollector;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -210,7 +212,7 @@ public class VideosDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        Log.v(TAG, "Upgrading database from version " + i + " to " + i1 + ", which will destroy all old data");
+        ErrorCollector.debugLog(TAG, "Upgrading database from version " + i + " to " + i1 + ", which will destroy all old data");
         //TODO [HIGH PRIORITY] for db version 2 should implement table value to value copy instead of dropping!
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(sqLiteDatabase);

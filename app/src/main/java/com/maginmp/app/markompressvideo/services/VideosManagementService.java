@@ -159,6 +159,7 @@ public class VideosManagementService extends JobService {
         }
 
         ErrorCollector.debugToast("starting job", this);
+        FilesUtils.mkDirIfNotExist(MainActivity.MKV_DIRECTORY);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ResourcesUtils.deviceEncoderStateUpdater(sharedPreferences,null, this);
         IS_DEVICE_STATE_ENCODING_READY = sharedPreferences.getBoolean(getString(R.string.keysetting_is_device_state_encoding_ready), false);
@@ -316,11 +317,10 @@ public class VideosManagementService extends JobService {
                 // If app data was clean, then all BU files will be cleaned up
                 if (now - newest > ResourcesUtils.hoursToMilis(hoursTokeepFile)) {
                     File fList[] = MainActivity.MKV_DIRECTORY.listFiles();
-                    for (int i = 0; i < fList.length; i++) {
-                        if (fList[i].getName().endsWith(VIDEO_FILE_EXTENSION) || fList[i].getName().endsWith(BACKUP_FILE_EXTENSION)) {
-                            FilesUtils.delFile(fList[i]);
-                        }
-                    }
+                    if (fList != null)
+                        for (int i = 0; i < fList.length; i++)
+                            if (fList[i].getName().endsWith(VIDEO_FILE_EXTENSION) || fList[i].getName().endsWith(BACKUP_FILE_EXTENSION))
+                                FilesUtils.delFile(fList[i]);
                 }
 
                 dbFindVideo.close();
@@ -473,7 +473,7 @@ public class VideosManagementService extends JobService {
             // Also find videos with 'running' status - it indicates that the process was interrupted in prev encodings
             String q = "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_QUEUE + ")=" + VideosDatabaseHelper.STATUS_QUEUE + " OR " + "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_RUNNING + ")=" + VideosDatabaseHelper.STATUS_RUNNING + "";
             Cursor dbFindVideo = videosDataSource.getAllVideos(false, q, "ASC");
-            Log.v(TAG, q);
+            ErrorCollector.debugLog(TAG, q);
 
             int cursorCount = dbFindVideo.getCount();
             int count = 0;
@@ -689,14 +689,14 @@ public class VideosManagementService extends JobService {
                         handler.setContext(serviceWeakRef);
                         FFtask task = ff.execute(encCmdArr,handler);
                         handler.setTask(task);
-                        Log.v(TAG, "enc fun Lock acquiring. Available permits: " + mSemaphore.availablePermits());
+                        ErrorCollector.debugLog(TAG, "enc fun Lock acquiring. Available permits: " + mSemaphore.availablePermits());
                         try {
                             mSemaphore.acquire();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         mSemaphore.drainPermits(); // just for safety
-                        Log.v(TAG, "enc fun Lock released. Available permits: " + mSemaphore.availablePermits());
+                        ErrorCollector.debugLog(TAG, "enc fun Lock released. Available permits: " + mSemaphore.availablePermits());
 
                         if (IS_FFMPEG_CANCELED) {
                             try {
@@ -766,14 +766,14 @@ public class VideosManagementService extends JobService {
             FFmpeg ff = FFmpeg.getInstance(serviceWeakRef);
             ff.setTimeout(FFMPEG_METADATA_TIMEOUT_MILLIS);
             FFtask task = ff.execute(metadataCmdArr,new FfmpegReadMetadataResponseHandler());
-            Log.v(TAG, "metadata fun Lock acquiring. Available permits: " + mSemaphore.availablePermits());
+            ErrorCollector.debugLog(TAG, "metadata fun Lock acquiring. Available permits: " + mSemaphore.availablePermits());
             try {
                 mSemaphore.acquire();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             mSemaphore.drainPermits(); // just for safety
-            Log.v(TAG, "metadata fun Lock released. Available permits: " + mSemaphore.availablePermits());
+            ErrorCollector.debugLog(TAG, "metadata fun Lock released. Available permits: " + mSemaphore.availablePermits());
 
             return FilesUtils.readTextFile(MetadataDestfile);
         }
@@ -789,24 +789,24 @@ public class VideosManagementService extends JobService {
 
             @Override
             public void onStart() {
-                Log.v(TAG, "FFMPEG get metadata Started");
+                ErrorCollector.debugLog(TAG, "FFMPEG get metadata Started");
             }
 
             @Override
             public void onProgress(String s) {
-                Log.v(TAG, "FFMPEG get metadata progress: " + s);
+                ErrorCollector.debugLog(TAG, "FFMPEG get metadata progress: " + s);
             }
 
             @Override
             public void onSuccess(String s) {
-                Log.v(TAG, "FFMPEG get metadata success: " + s);
+                ErrorCollector.debugLog(TAG, "FFMPEG get metadata success: " + s);
             }
 
             @Override
             public void onFinish() {
-                Log.v(TAG, "FFMPEG get metadata finished");
+                ErrorCollector.debugLog(TAG, "FFMPEG get metadata finished");
                 mSemaphore.release();
-                Log.v(TAG, "ff meta Lock released. Available permits: " + mSemaphore.availablePermits());
+                ErrorCollector.debugLog(TAG, "ff meta Lock released. Available permits: " + mSemaphore.availablePermits());
             }
         }
 
@@ -833,12 +833,12 @@ public class VideosManagementService extends JobService {
 
             @Override
             public void onStart() {
-                Log.v(TAG, "FFMPEG encode Started");
+                ErrorCollector.debugLog(TAG, "FFMPEG encode Started");
             }
 
             @Override
             public void onProgress(String s) {
-                Log.v(TAG, "FFMPEG encode progress: " + s);
+                ErrorCollector.debugLog(TAG, "FFMPEG encode progress: " + s);
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 ResourcesUtils.deviceEncoderStateUpdater(sharedPreferences,null, mContext);
                 IS_DEVICE_STATE_ENCODING_READY = sharedPreferences.getBoolean(mContext.getString(R.string.keysetting_is_device_state_encoding_ready), false);
@@ -852,14 +852,14 @@ public class VideosManagementService extends JobService {
 
             @Override
             public void onSuccess(String s) {
-                Log.v(TAG, "FFMPEG encode success: " + s);
+                ErrorCollector.debugLog(TAG, "FFMPEG encode success: " + s);
             }
 
             @Override
             public void onFinish() {
-                Log.v(TAG, "FFMPEG encode finished");
+                ErrorCollector.debugLog(TAG, "FFMPEG encode finished");
                 mSemaphore.release();
-                Log.v(TAG, "ff enc Lock released. Available permits: " + mSemaphore.availablePermits());
+                ErrorCollector.debugLog(TAG, "ff enc Lock released. Available permits: " + mSemaphore.availablePermits());
             }
 
             public void setContext(Context context)
