@@ -239,13 +239,11 @@ public class VideosManagementService extends JobService {
         protected ResultUpdater doInBackground(Integer... integers) {
 
             try {
-
-                fileCleanuper();
-
                 ResultUpdater result = new ResultUpdater();
                 mOperation = integers[0];
                 if (mOperation == MESSAGE_REFRESH_DATABASE || mOperation == MESSAGE_START_ENCODING) {
                     refreshDb();
+                    fileCleanuper();
                 }
                 if (mOperation == MESSAGE_START_ENCODING) {
                     result = startEncoding();
@@ -293,13 +291,13 @@ public class VideosManagementService extends JobService {
                 Cursor dbFindVideo = videosDataSource.getAllVideos(false, "(" + VideosDatabaseHelper.COL_VIDEO_STATUS + " & " + VideosDatabaseHelper.STATUS_DONE + ")=" + VideosDatabaseHelper.STATUS_DONE + "");
                 List<String> cols = VideosDatabaseHelper.ALL_COLS_BY_ORDER;
                 long now = System.currentTimeMillis();
-                long newest = ResourcesUtils.hoursToMilis(hoursTokeepFile) + 1;
+                long newest = 0;
 
                 while (!dbFindVideo.isAfterLast()) {
                     synchronized (ThreadsUtils.SYNC_FILE_OPERATION) {
                         long addedToQueDate = dbFindVideo.getLong(cols.indexOf(VideosDatabaseHelper.COL_ADDED_TO_QUEUE_DATE));
                         long backupCreationDate = dbFindVideo.getLong(cols.indexOf(VideosDatabaseHelper.COL_PROC_DATE));
-                        if (addedToQueDate < backupCreationDate && backupCreationDate > newest)
+                        if (backupCreationDate > newest)
                             newest = backupCreationDate;
                         if (addedToQueDate < backupCreationDate && now - backupCreationDate > ResourcesUtils.hoursToMilis(hoursTokeepFile)) {
                             File buFile = new File(dbFindVideo.getString(cols.indexOf(VideosDatabaseHelper.COL_VIDEO_BU_PATH)));
@@ -376,11 +374,11 @@ public class VideosManagementService extends JobService {
                     }
 
                     // remove backup file
-                    File backupFile = new File(dbScanAllVideoFiles.getString(2));
+                    File backupFile = new File(dbScanAllVideoFiles.getString(VideosDatabaseHelper.COMPACT_COLS_LIST.indexOf(VideosDatabaseHelper.COL_VIDEO_BU_PATH)));
                     if (backupFile.exists())
                         FilesUtils.delFile(backupFile);
                     // add to remove from db list
-                    rowsToRemove.add(dbScanAllVideoFiles.getLong(0));
+                    rowsToRemove.add(dbScanAllVideoFiles.getLong(VideosDatabaseHelper.COMPACT_COLS_LIST.indexOf(VideosDatabaseHelper.COL_ID)));
                 } else // Video is in db so remove from file list to lower iterations in next step
                     dirsScanAllVideoFiles.remove(new File(videoPath));
 
@@ -595,6 +593,8 @@ public class VideosManagementService extends JobService {
 
             boolean failed = false;
 
+            video.setmProcessedDate(new Date(System.currentTimeMillis()));
+
             if (MainActivity.MKV_DIRECTORY.getFreeSpace() > SRC_FILESIZE_MULT * video.getmSourceFilesize()) {
                 ArrayList<String> encCmd = new ArrayList<>();
 
@@ -714,7 +714,6 @@ public class VideosManagementService extends JobService {
                             File outWithBakExt = FilesUtils.constructBackupFile(out);
                             out.renameTo(outWithBakExt);
                             video.setmFfmpegCmd(TextUtils.join(" ", encCmd));
-                            video.setmProcessedDate(new Date(System.currentTimeMillis()));
                             video.setmAppVersion(BuildConfig.VERSION_CODE);
                             video.setmBackupFile(outWithBakExt);
                             video.setmEncodeTime(stopWatch.getTimeElapsed());

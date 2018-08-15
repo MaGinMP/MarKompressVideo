@@ -342,7 +342,7 @@ public class VideoFragment extends Fragment {
 
                 addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_file), video.getmFile().getParent());
 
-                if (video.getmProcessedDate().after(video.getmAddedToQueueDate()))
+                if (video.getmProcessedDate().after(new Date(0)))
                     addRow(moreInfo, tab + getString(R.string.videos_card_moreinfo_proccesed), (new SimpleDateFormat("d MMM yyyy", Locale.US)).format(video.getmProcessedDate()));
 
                 if (video.getmProcessedDate().after(video.getmAddedToQueueDate()))

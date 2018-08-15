@@ -96,7 +96,9 @@ public class VideosDataSource {
      * @param ids video object ids array
      */
     public void removeVideoByIds(Long[] ids) {
-        long deletedCount = mDatabase.delete(VideosDatabaseHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " = ?", Arrays.toString(ids).split("[\\[\\]]")[1].split(", "));
+        // _id IN (?,?,...,?)
+        String qm = "(" + new String(new char[ids.length-1]).replace("\0", "?,") + "?)";
+        long deletedCount = mDatabase.delete(VideosDatabaseHelper.TABLE_NAME, VideosDatabaseHelper.COL_ID + " IN " + qm, Arrays.toString(ids).split("[\\[\\]]")[1].split(", "));
         if (deletedCount != ids.length) {
             String err = TAG + " Remove video by ids from DB failed, ids.len=" + ids.length;
             Log.e(TAG, err);
